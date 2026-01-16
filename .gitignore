@@ -1,0 +1,25 @@
+# Byte-compiled / cached files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+.env
+
+# IDE / Editor files
+.vscode/
+.idea/
+*.swp
+
+# Logs and local files
+*.log
+*.sqlite3
+instance/
+
+# Dependency files
+requirements.txt
+
+#sqlite database
+velogames.db

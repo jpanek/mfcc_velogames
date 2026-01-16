@@ -1,0 +1,93 @@
+<!-- templates/race.html -->
+{% extends 'base.html' %}
+
+{% block title %}MFCC Velogames{% endblock %}
+
+{% block content %}
+<script>
+    function redirectToLink(row) {
+        window.location.href = row.getAttribute("data-url");
+    }
+</script>
+
+<!-- <div class="container mt-5"> -->
+<h3 class="mb-1">{{ title }}</h3>
+
+<div style="display: flex; justify-content: center; gap: 10px; width: 100%; padding: 10px;">
+    <!-- First Table (Columns 1 to 4) -->
+    <table class="table table-bordered table-hover mt-2" style="width: auto; table-layout: fixed;">
+        <thead class="table-primary">
+            <tr>
+                {% for column in columns[2:] %}
+                    <th>{{ column }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+                <tr data-url="{{ url_for('main.team') }}?team_id={{ row['team_id'] }}" onclick="redirectToLink(this)">
+                    {% for cell in row[2:] %}
+                        <td class="{% if cell is number %}numeric{% endif %}" style="padding: 6px; text-align: {% if cell is number %}right{% else %}left{% endif %};">
+                            {{ "{:,.0f}".format(cell) if cell is number else cell }}
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<canvas id="chart"></canvas>
+
+<script>
+    const chartData = {
+        labels: {{ labels | tojson | safe }},
+        datasets: {{ datasets | tojson | safe }}
+    };
+
+    const ctx = document.getElementById('chart').getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: chartData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                },
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Stages',
+                    },
+                    ticks: {
+                        // Rotate labels if they are too long to fit
+                        autoSkip: true,
+                        maxRotation: 90,  // Allow maximum rotation of 90 degrees
+                        minRotation: 45,  // Allow minimum rotation of 45 degrees
+                    },
+                    // Wrap text if it's too long
+                    callback: function(value) {
+                        const maxLength = 10; // Define a maximum number of characters per line
+                        const wrapped = value.length > maxLength ? value.match(/.{1,10}/g).join("\n") : value;
+                        return wrapped;
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Cumulative Points',
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock %}

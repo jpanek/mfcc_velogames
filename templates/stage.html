@@ -1,0 +1,225 @@
+<!-- templates/race.html -->
+{% extends 'base.html' %}
+
+{% block title %}MFCC Velogames{% endblock %}
+
+{% block content %}
+
+
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 20px;">
+        <!-- Previous Stage Button -->
+        <div style="flex: 0 0 auto; width: 33%; text-align: left;">
+            {% if prev_stage %}
+                <a href="{{ url_for('main.stage', stage_id=prev_stage['stage_id']) }}" class="btn btn-outline-secondary" 
+                style="font-size: 1rem; padding: 10px 15px; color: #5a5a5a; text-decoration: none; border: 1px solid #ccc;">
+                    ← {{ prev_stage['stage_name'] }}
+                </a>
+            {% else %}
+                <span></span>  <!-- Empty space placeholder when prev_stage is not available -->
+            {% endif %}
+        </div>
+
+        <!-- Current Stage Title (Two rows: Race Name and Stage Name + Date) -->
+        <div style="flex-grow: 1; text-align: center; color: #333;">
+            <div style="font-size: 2rem; font-weight: bold; text-transform: capitalize;">
+                {{ stage_name }}
+            </div>
+            <div style="font-size: 1.2rem; font-weight: normal; color: #666;">
+                {{ race_name }} - {{ stage_date }}
+            </div>
+        </div>
+
+        <!-- Next Stage Button -->
+        <div style="flex: 0 0 auto; width: 33%; text-align: right;">
+            {% if next_stage %}
+                <a href="{{ url_for('main.stage', stage_id=next_stage['stage_id']) }}" class="btn btn-outline-secondary" 
+                style="font-size: 1rem; padding: 10px 15px; color: #5a5a5a; text-decoration: none; border: 1px solid #ccc;">
+                    {{ next_stage['stage_name'] }} →
+                </a>
+            {% else %}
+                <span></span>  <!-- Empty space placeholder when next_stage is not available -->
+            {% endif %}
+        </div>
+    </div>
+
+
+
+        
+    <div style="display: flex; justify-content: center; gap: 10px; width: 100%; padding: 10px;">
+        
+        <!-- First table: Stage results -->
+        <table class="table table-bordered table-hover mt-2" style="table-layout: fixed; font-size: 0.9rem; padding: 5px; width: auto;">
+            <caption style="caption-side: top; font-size: 1.2rem; font-weight: bold; margin-bottom: 10px;">
+                {{ stage_name }} results
+            </caption>    
+            <thead class="table-primary" style="font-size: 0.9rem; background-color: #f1f1f1;">
+                <tr>
+                    {% for column in columns[4:] %}
+                        <th style="padding: 8px; text-align: left; font-weight: normal;">
+                            {{ column }}
+                        </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody style="font-size: 0.85rem; line-height: 1.3;">
+                {% for row in data %}
+                    <tr>
+                        {% for cell in row[4:] %}
+                            <td class="{% if cell is number %}numeric{% endif %}" style="padding: 6px; text-align: {% if cell is number %}right{% else %}left{% endif %};">
+                                {{ "{:,.0f}".format(cell) if cell is number else cell }}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    
+        <!-- Second table: GC Results -->
+        <table class="table table-bordered table-hover mt-2" style="table-layout: fixed; font-size: 0.9rem; padding: 5px; width: auto;">
+            <caption style="caption-side: top; font-size: 1.2rem; font-weight: bold; margin-bottom: 10px;">
+                GC after {{ stage_name }}
+            </caption>    
+            <thead class="table-primary" style="font-size: 0.9rem; background-color: #f1f1f1;">
+                <tr>
+                    {% for column in columns_gc[4:] %}
+                        <th style="padding: 8px; text-align: left; font-weight: normal;">
+                            {{ column }}
+                        </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody style="font-size: 0.85rem; line-height: 1.3;">
+                {% for row in data_gc %}
+                    <tr>
+                        {% for cell in row[4:] %}
+                            <td class="{% if cell is number %}numeric{% endif %}" style="padding: 6px; text-align: {% if cell is number %}right{% else %}left{% endif %};">
+                                {{ "{:,.0f}".format(cell) if cell is number else cell }}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    
+    
+    {% if roster is none %}
+        <div class="alert alert-warning text-center" role="alert">
+            Rosters not available yet
+        </div>
+    {% else %}
+        <div style="display: flex; justify-content: center; gap: 10px; width: 100%; padding: 10px;">
+            <div style="display: inline-block;">
+                <table class="table table-bordered table-hover mt-2" style="width: auto; table-layout: fixed; font-size: 0.9rem; padding: 5px;">
+                    <caption style="caption-side: top; font-size: 1.2rem; font-weight: bold; margin-bottom: 10px;">
+                        Selected riders with (cost - Points)
+                    </caption>
+                    <thead class="table-primary" style="font-size: 0.9rem;">
+                        <tr>
+                            {% for manager in chart_labels %}
+                                <th style="padding: 8px;">{{ manager }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody style="font-size: 0.85rem; line-height: 1.3;">
+                        {% for i in range(table_data.values()|map('length')|max) %}
+                        <tr>
+                            {% for manager in chart_labels %}
+                                <td style="padding: 6px;">
+                                    {% if i < table_data[manager]|length %}
+                                        {{ table_data[manager][i] }}
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <!-- <div style="text-align: right; font-size: 0.75rem; color: #6c757d; margin-top: 0px;">
+                    Rider (cost) - Ordered descending
+                </div> -->
+            </div>
+        </div>
+    {% endif %}
+
+    {% if results %}
+        <canvas id="stageChart"></canvas>
+    {% else %}
+        <div class="alert alert-warning text-center" role="alert">
+            Results not available yet
+        </div>
+    {% endif %}
+
+    <script>
+        const ctx = document.getElementById('stageChart').getContext('2d');
+        const chartData = {
+            labels: {{ chart_labels | tojson | safe }},
+            datasets: {{ chart_datasets | tojson | safe }}
+        };
+    
+        new Chart(ctx, {
+            type: 'bar',
+            data: chartData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { 
+                        display: false // hide the legend
+                    },
+                    tooltip: {
+                        mode: 'nearest',
+                        intersect: false
+                    }
+                },
+                scales: {
+                    x: {
+                        stacked: true,
+                        title: {
+                            display: true,
+                            text: "Team Managers",
+                            font: {
+                                size: 10 // reduce font size for x-axis title
+                            }
+                        },
+                        ticks: {
+                            font: {
+                                size: 10 // reduce font size for x-axis labels
+                            },
+                            padding: 5 // reduce spacing between ticks
+                        }
+                    },
+                    y: {
+                        stacked: true,
+                        title: {
+                            display: true,
+                            text: "Total Points",
+                            font: {
+                                size: 10 // reduce font size for y-axis title
+                            }
+                        },
+                        ticks: {
+                            font: {
+                                size: 10 // reduce font size for y-axis labels
+                            },
+                            padding: 5 // reduce spacing between ticks
+                        }
+                    }
+                },
+                barPercentage: 1., // adjust bar width, reduce to make bars thinner
+                categoryPercentage: 0.7, // reduce the spacing between bars
+                layout: {
+                    padding: {
+                        top: 10, // reduce top padding
+                        right: 10, // reduce right padding
+                        bottom: 10, // reduce bottom padding
+                        left: 10 // reduce left padding
+                    }
+                }
+            }
+        });
+    </script>
+    
+</div>
+
+{% endblock %}

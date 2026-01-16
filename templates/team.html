@@ -1,0 +1,71 @@
+<!-- templates/race.html -->
+{% extends 'base.html' %}
+
+{% block title %}MFCC Velogames{% endblock %}
+
+{% block content %}
+<script>
+    function redirectToLink(row) {
+        window.location.href = row.getAttribute("data-url");
+    }
+</script>
+
+<!-- <div class="container mt-5"> -->
+<h3 class="mb-1">{{ title }}</h3>
+    
+<div style="display: flex; justify-content: center; gap: 10px; width: 100%; padding: 10px;">
+    <table class="table table-bordered table-hover mt-2 sortable-table" style="width: auto; table-layout: fixed;">
+        <thead class="table-primary">
+            <tr>
+                {% for column in columns[3:] %}
+                    <th onclick="sortTable(this, {{ loop.index0 }})" style="cursor: pointer; position: relative;">
+                        {{ column }} 
+                        <span class="sort-arrow" style="margin-left: 5px;">▲▼</span>
+                    </th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+                <tr>
+                    {% for cell in row[3:] %}
+                        <td class="{% if cell is number %}numeric{% endif %}" style="text-align: {% if cell is number %}right{% else %}left{% endif %};">
+                            {{ "{:,.0f}".format(cell) if cell is number else cell }}
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function sortTable(header, columnIndex) {
+    let table = header.closest("table");
+    let tbody = table.querySelector("tbody");
+    let rows = Array.from(tbody.querySelectorAll("tr"));
+    let ascending = header.dataset.order !== "asc";
+    
+    rows.sort((rowA, rowB) => {
+        let cellA = rowA.children[columnIndex].innerText.trim();
+        let cellB = rowB.children[columnIndex].innerText.trim();
+        
+        let a = isNaN(cellA) ? cellA.toLowerCase() : parseFloat(cellA.replace(/,/g, ''));
+        let b = isNaN(cellB) ? cellB.toLowerCase() : parseFloat(cellB.replace(/,/g, ''));
+        
+        return ascending ? (a > b ? 1 : -1) : (a < b ? 1 : -1);
+    });
+
+    tbody.append(...rows);
+    header.dataset.order = ascending ? "asc" : "desc";
+
+    // Reset all sort arrows
+    document.querySelectorAll(".sort-arrow").forEach(el => el.innerHTML = "▲▼");
+
+    // Update the clicked column's sort arrow
+    let arrow = header.querySelector(".sort-arrow");
+    arrow.innerHTML = ascending ? "▲" : "▼";
+}
+</script>
+
+{% endblock %}

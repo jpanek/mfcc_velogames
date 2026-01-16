@@ -1,0 +1,152 @@
+<!-- templates/race.html -->
+{% extends 'base.html' %}
+
+{% block title %}MFCC Velogames{% endblock %}
+
+{% block content %}
+<script>
+    function redirectToLink(row) {
+        window.location.href = row.getAttribute("data-url");
+    }
+</script>
+
+<!-- <div class="container mt-5"> -->
+<h3 class="mb-1">{{ title }}</h3>
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-11">
+        <canvas id="scatterChart" style="width: 100%; height: 500px;"></canvas>
+      </div>
+    </div>
+  </div>
+  
+
+<!-- Search for rider by name box: -->
+<div style="display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; padding: 10px;">
+    <!-- Search Row (Above Table) -->
+    <div style="width: 100%; margin-bottom: 10px;">
+        <input type="text" id="searchInput" placeholder="Search by rider name..." class="form-control" style="width: 300px; margin-left: 0;">
+    </div>
+
+    <!-- Table -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover mt-2 sortable-table" style="width: 100%; table-layout: fixed;">
+            <thead class="table-primary">
+                <tr>
+                    {% for column in columns[3:] %}
+                        <th onclick="sortTable(this, {{ loop.index0 }})" style="cursor: pointer; position: relative;">
+                            {{ column }} 
+                            <span class="sort-arrow" style="margin-left: 5px;">▲▼</span>
+                        </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                {% for row in data %}
+                    <tr data-url="{{ url_for('main.rider', race_id=row['race_id'], rider_code=row['rider_code']) }}" onclick="redirectToLink(this)">
+                        {% for cell in row[3:] %}
+                            <td class="{% if cell is number %}numeric{% endif %}" style="text-align: {% if cell is number %}right{% else %}left{% endif %};">
+                                {{ "{:,.0f}".format(cell) if cell is number else cell }}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Scatter plot for Riders --> 
+<script>
+    const chartData = {{ chart_data|safe }};
+
+    const ctx = document.getElementById('scatterChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'scatter',
+        data: {
+            datasets: [{
+                label: 'Cost vs Points',
+                data: chartData,
+                backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                pointRadius: 7,
+                pointHoeverRadius: 10,
+                borderColor: 'rgba(255, 99, 132, 1)'
+            }]
+        },
+        options: {
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const point = context.raw;
+                            return `${point.label}: (${point.x}, ${point.y})`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    title: { display: true, text: 'Cost' }
+                },
+                y: {
+                    title: { display: true, text: 'Points' }
+                }
+            }
+        }
+    });
+</script>
+
+<!-- Sorting table by columns -->
+<script>
+    function sortTable(header, columnIndex) {
+        let table = header.closest("table");
+        let tbody = table.querySelector("tbody");
+        let rows = Array.from(tbody.querySelectorAll("tr"));
+        let ascending = header.dataset.order !== "asc";
+    
+        rows.sort((rowA, rowB) => {
+            let cellA = rowA.children[columnIndex].innerText.trim().replace(/,/g, '');
+            let cellB = rowB.children[columnIndex].innerText.trim().replace(/,/g, '');
+    
+            let a = isNaN(cellA) ? cellA.toLowerCase() : parseFloat(cellA);
+            let b = isNaN(cellB) ? cellB.toLowerCase() : parseFloat(cellB);
+    
+            return ascending ? (a > b ? 1 : -1) : (a < b ? 1 : -1);
+        });
+    
+        tbody.append(...rows);
+        header.dataset.order = ascending ? "asc" : "desc";
+    
+        // Reset all sort arrows
+        document.querySelectorAll(".sort-arrow").forEach(el => el.innerHTML = "▲▼");
+    
+        // Update the clicked column's sort arrow
+        let arrow = header.querySelector(".sort-arrow");
+        arrow.innerHTML = ascending ? "▲" : "▼";
+    }
+    
+</script>
+
+<!-- Functino: Filtering -->
+<script>
+    // Filter table based on input
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+        var filter = this.value.toLowerCase();
+        var table = document.getElementById('tableBody');
+        var rows = table.getElementsByTagName('tr');
+        
+        for (var i = 0; i < rows.length; i++) {
+            var firstCell = rows[i].getElementsByTagName('td')[0]; // Accessing the first column (index 0)
+            if (firstCell) {
+                var textValue = firstCell.textContent || firstCell.innerText;
+                if (textValue.toLowerCase().indexOf(filter) > -1) {
+                    rows[i].style.display = ""; // Show row
+                } else {
+                    rows[i].style.display = "none"; // Hide row
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,121 @@
+<!-- templates/index.html -->
+{% extends 'base.html' %}
+
+{% block title %}MFCC Velogames{% endblock %}
+
+{% block content %}
+
+    
+    <h3>Upcoming races</h3>
+
+    <!-- Table with races here: -->
+    <div style="display: flex; justify-content: center; gap: 10px; width: 100%; padding: 10px;">
+        <table class="table table-bordered table-hover mt-2" style="width: auto; table-layout: fixed;">
+            <thead class="table-primary">
+                <tr>
+                    {% for column in columns[2:] %}
+                        <th>
+                            {{ column }}
+                        </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data %}
+                    <tr data-url="{{ url_for('main.stage') }}?stage_id={{ row['stage_id'] }}" onclick="redirectToLink(this)" {% if row['warning'] == 1 %}class="table-warning"{% endif %}>
+                        {% for cell in row[2:] %}
+                            <td class="{% if cell is number %}numeric{% endif %}" style=" text-align: {% if cell is number %}right{% else %}left{% endif %};">
+                                {{ "{:,.0f}".format(cell) if cell is number else cell }}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <h3>Overall teams</h3>
+    <!-- Table with races here: -->
+    <div style="display: flex; justify-content: center; gap: 10px; width: 100%; padding: 10px;">
+        <table class="table table-bordered table-hover mt-2" style="width: auto; table-layout: fixed;">
+            <thead class="table-primary">
+                <tr>
+                    {% for column in columns_2 %}
+                        <th>
+                            {{ column }}
+                        </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data_2 %}
+                    <tr>
+                        {% for cell in row %}
+                            <td class="{% if cell is number %}numeric{% endif %}" style=" text-align: {% if cell is number %}right{% else %}left{% endif %};">
+                                {{ "{:,.0f}".format(cell) if cell is number else cell }}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Scatter plot here: -->
+    <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-10 col-md-11">
+            <canvas id="scatterChart" style="width: 100%; height: 500px;"></canvas>
+          </div>
+        </div>
+    </div>
+
+    <!-- Function: Scatter plot for Riders --> 
+    <script>
+        const chartData = {{ chart_data|safe }};
+
+        const ctx = document.getElementById('scatterChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Cost vs Points',
+                    data: chartData,
+                    backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                    pointRadius: 7,
+                    pointHoeverRadius: 10,
+                    borderColor: 'rgba(255, 99, 132, 1)'
+                }]
+            },
+            options: {
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const point = context.raw;
+                                return `${point.label}: (${point.x}, ${point.y})`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: { display: true, text: 'Cost' }
+                    },
+                    y: {
+                        title: { display: true, text: 'Points' }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <!-- Function: Redirect to link -->
+    <script>
+        function redirectToLink(row) {
+            window.location.href = row.getAttribute("data-url");
+        }
+    </script>
+{% endblock %}
+
+<!-- -->
