@@ -19,7 +19,7 @@ venv/
 instance/
 
 # Dependency files
-requirements.txt
+#requirements.txt
 
 #sqlite database
 velogames.db
