@@ -26,4 +26,4 @@ def create_app():
 # This is for running the app directly
 if __name__ == '__main__':
     app = create_app()  # Create the app instance
-    app.run(debug=True, port=5001)
+    app.run(debug=True, port=5000)
