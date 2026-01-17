@@ -22,6 +22,7 @@ def create_app():
     app.context_processor(inject_current_year)
     return app
 
+app = create_app()
 
 # This is for running the app directly
 if __name__ == '__main__':
