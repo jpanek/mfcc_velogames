@@ -1,5 +1,7 @@
+# web_functions.py
+
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, SoupStrainer
 import re
 from datetime import datetime, timedelta
 
@@ -128,20 +130,22 @@ def get_teams(race):
 
     return teams
 
-def get_roster(race, stage, team):
+def get_roster(race, stage, team, session=None):
     url = get_team_stage_url(race['url'], team['team_code'], stage['stage_number'])
     roster = []
 
-    # Send the GET request and parse the page
-    response = requests.get(url)
-    response.raise_for_status()
-    soup = BeautifulSoup(response.text, 'html.parser')
+    # if session if available use it, otherwise requests (standalone)
+    fetcher = session if session else requests
 
-    # Find the table containing the roster
-    table = soup.find('table', {'class': 'responsive'})
+    # Send the GET request and parse the page
+    response = fetcher.get(url)
+    response.raise_for_status()
+
+    only_table = SoupStrainer('table', {'class': 'responsive'})
+    soup = BeautifulSoup(response.text, 'lxml', parse_only=only_table)
 
     # Get all rows (including the header)
-    rows = table.find_all('tr')
+    rows = soup.find_all('tr')
 
     # Iterate through each row and fix any malformed rows
     for i,row in enumerate(rows):
