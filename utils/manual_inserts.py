@@ -33,14 +33,16 @@ def insert_race(name, year, url, start_date, end_date):
 # Insert the races
 
 race_set ={
-    "name":"Womens TDU",
+    "name":"Tour Down Under",
     "year":"2026",
-    "url":"https://www.velogames.com/womens-tour-down-under/2026/",
-    "start_date":"2026-01-17",
-    "end_date":"2026-01-19"
+    "url":"https://www.velogames.com/tour-down-under/2026/",
+    "start_date":"2026-01-20",
+    "end_date":"2026-01-25"
 }
 
-#insert_race(race_set['name'],race_set['year'], race_set['url'], race_set['start_date'], race_set['end_date'])
+#https://www.velogames.com/tour-down-under/2026
+
+insert_race(race_set['name'],race_set['year'], race_set['url'], race_set['start_date'], race_set['end_date'])
 
 races = get_races_db(race_set['name'])
 
@@ -51,11 +53,11 @@ if 1:
         print(f"Working on race: {race['name']} started at {time}")
         
         #load all riders
-        if 0:
+        if 1:
             riders_data = get_riders(race['url'])
             insert_riders_db(race, riders_data)
 
-        if 0:
+        if 1:
             #load all stages for a race
             stages = get_stages(race)
             #print_first_rows(stages,12)
@@ -83,7 +85,7 @@ if 1:
                         insert_roster_db(race,stage,team,roster)
                         print('\t\t Rosters loaded ....')
                     wait = random.uniform(4, 8)
-                    print(f'\t\t Waiting for {wait} seconds ...')
+                    print(f'\t\t Waiting for {round(wait,2)} seconds ...')
                     time_pkg.sleep(wait)
             if not len(stages): print(f'\tNo stages to process for {race['name']} ...')
 

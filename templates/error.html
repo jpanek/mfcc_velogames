@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Data Not Available{% endblock %}
+
+{% block content %}
+<div class="container mt-5 text-center">
+    <div class="alert alert-info">
+        <h3>No Data Found</h3>
+        <p>{{ message }}</p>
+        <a href="javascript:history.back()" class="btn btn-secondary mt-3">Go Back</a>
+    </div>
+</div>
+{% endblock %}

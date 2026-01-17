@@ -184,6 +184,10 @@ def riders():
     race_id = request.args.get('race_id')
     params = (race_id,)
     columns, data = get_data_from_db(sql_riders_rank,params)
+
+    if not data:
+        return render_template('error.html', message="Data not available for this race.")
+
     race = data[0]['race_name']
     title = f"Team riders for {race}"
 
@@ -250,7 +254,7 @@ def view_log():
             content = f.read()
     except Exception as e:
         content = f"Error reading log: {e}"
-        
+
     return f"<pre>{content}</pre>"
 
 @main_bp.route('/teams', methods=['GET'])
@@ -259,6 +263,9 @@ def teams():
     race_id = request.args.get('race_id')
     params = (race_id,)
     columns, data = get_data_from_db(sql_teams,params)
+
+    if not data:
+        return render_template('error.html', message="Data not available for this race.")
 
     ch_columns,ch_data = get_data_from_db(sql_teams_chart,params)
     _, races = get_data_from_db(sql_races,params)
@@ -289,7 +296,7 @@ def teams():
             "tension": 0.1
         }
         datasets.append(dataset)
-
+    
     race = data[0]['race_name']
     title = f"Teams stats for {race}"
 
