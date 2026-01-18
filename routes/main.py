@@ -1,9 +1,11 @@
-from flask import Blueprint, render_template, request, json, current_app
+from flask import Blueprint, render_template, request, json, current_app, redirect, url_for, flash
 from utils.db_functions import get_data_from_db, get_pd_from_db, print_first_rows
 from utils.queries import sql_stages_podium, sql_stages_chart, sql_stage_results, sql_stage_roster, sql_gc_results, sql_next_stages
 from utils.queries import sql_calendar, sql_stage, sql_riders_rank, sql_rider, sql_riders_rank_all, sql_races
 from utils.queries import sql_teams, sql_teams_chart, sql_team, sql_teams_overall, sql_report
 from datetime import datetime
+import os
+import subprocess
 
 main_bp = Blueprint('main',__name__)
 
@@ -247,15 +249,14 @@ def scatter():
 
 @main_bp.route('/log')
 def view_log():
-    try:
-        log_path = current_app.config['LOG_PATH']
-
+    log_path = current_app.config.get('LOG_PATH')
+    content = ""
+    if log_path and os.path.exists(log_path):
         with open(log_path, 'r') as f:
-            content = f.read()
-    except Exception as e:
-        content = f"Error reading log: {e}"
-
-    return f"<pre>{content}</pre>"
+            lines = f.readlines()
+            content = "".join(reversed(lines[-100:]))
+    
+    return render_template('log_viewer.html', content=content)
 
 @main_bp.route('/teams', methods=['GET'])
 def teams():
@@ -345,3 +346,27 @@ def ad_hoc():
                     columns=columns,
                     data=data
                     )
+
+@main_bp.route('/run-worker', methods=['POST'])
+def run_worker():
+    log_path = current_app.config.get('LOG_PATH')
+    project_root = os.path.dirname(os.path.dirname(log_path))
+    
+    script_path = os.path.join(project_root, 'utils', 'run_velo.py')
+    python_executable = os.path.join(project_root, 'venv', 'bin', 'python3')
+
+    try:
+        with open(log_path, "a") as log_file:
+            log_file.write(f"\n*** [Manual Run Started via Web] ***\n")
+            subprocess.Popen(
+                [python_executable, script_path],
+                stdout=log_file,
+                stderr=log_file,
+                cwd=project_root
+            )
+    except Exception as e:
+        # We'll just print to the console since we aren't using flash
+        print(f"Error starting background worker: {e}")
+
+    # Just redirect back to the log page immediately
+    return redirect(url_for('main.view_log'))
