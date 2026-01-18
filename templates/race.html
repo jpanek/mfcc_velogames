@@ -10,50 +10,58 @@
     }
 </script>
 
-<!-- <div class="container mt-5"> -->
-<h1 class="mb-1">{{ title }}</h1>
-    
-<!-- Wrapper to hold both tables side by side, centered horizontally -->
-<div style="display: flex; justify-content: center; gap: 10px; width: 100%; padding: 10px;">
-    <!-- First Table (Columns 1 to 4) -->
-    <table class="table table-bordered table-hover mt-2" style="width: auto; table-layout: fixed;">
-        <thead class="table-primary">
-            <tr>
-                {% for column in columns[1:6] %}
-                    <th>{{ column }}</th>
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in data %}
-                <tr data-url="{{ url_for('main.stage') }}?stage_id={{ row['stage_id'] }}" onclick="redirectToLink(this)">
-                    {% for cell in row[1:6] %}
-                        <td>{{ cell }}</td>
-                    {% endfor %}
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<h1 class="mb-4 h3 text-center">{{ title }}</h1>
 
-    <!-- Second Table (Columns 5 and beyond) -->
-    <table class="table table-bordered table-hover mt-2" style="width: auto; table-layout: fixed;">
-        <thead class="table-primary">
-            <tr>
-                {% for column in columns[6:] %}
-                    <th>{{ column }}</th>
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in data %}
-            <tr data-url="{{ url_for('main.stage') }}?stage_id={{ row['stage_id'] }}" onclick="redirectToLink(this)">
-                    {% for cell in row[6:] %}
-                        <td>{{ cell }}</td>
+<div class="row g-3 justify-content-center">
+    <div class="col-12 col-lg-auto">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover w-auto mx-auto shadow-sm">
+                <thead class="table-primary small text-center">
+                    <tr>
+                        {% for column in columns[1:6] %}
+                            <th class="text-nowrap fw-normal">{{ column }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody class="small">
+                    {% for row in data %}
+                        <tr style="cursor: pointer;" data-url="{{ url_for('main.stage') }}?stage_id={{ row['stage_id'] }}" onclick="redirectToLink(this)">
+                            {% for cell in row[1:6] %}
+                                <td class="text-nowrap">{{ cell }}</td>
+                            {% endfor %}
+                        </tr>
                     {% endfor %}
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-auto">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover w-auto mx-auto shadow-sm">
+                <thead class="table-primary small text-center">
+                    <tr>
+                        <th class="text-nowrap fw-normal">{{ columns[1] }}</th>
+                        {% for column in columns[6:] %}
+                            <th class="text-nowrap fw-normal">{{ column }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody class="small">
+                    {% for row in data %}
+                        <tr style="cursor: pointer;" data-url="{{ url_for('main.stage') }}?stage_id={{ row['stage_id'] }}" onclick="redirectToLink(this)">
+                            
+                            <td class="text-nowrap">{{ row[1] }}</td>
+                            
+                            {% for cell in row[6:] %}
+                                <td class="text-nowrap">{{ cell }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 
