@@ -127,11 +127,71 @@
                         </tbody>
                     </table>
                 </div>
+                <!--
                 <div class="text-center mt-1">
                     <small class="text-muted">Rider (cost) - Ordered descending</small>
                 </div>
+                -->
             </div>
         </div>
+    {% endif %}
+
+    {% if ownership_list %}
+    <div class="row mt-5 mb-5">
+        <div class="col-12">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover w-auto mx-auto shadow-sm mb-0">
+                    <caption style="caption-side: top; font-size: 1.2rem; font-weight: bold; margin-bottom: 10px; color: #666;" class="text-start">
+                        Rider list & teams
+                    </caption>
+                    <thead class="table-primary small text-center">
+                        <tr>
+                            <th class="text-nowrap fw-normal">Rider</th>
+                            <th class="text-nowrap fw-normal">Count</th>
+                            <th class="text-nowrap fw-normal">Teams</th>
+                            <th class="text-nowrap fw-normal">Points</th>
+                        </tr>
+                    </thead>
+                    <tbody class="small">
+                        {# Show only the first 10 riders initially #}
+                        {% for item in ownership_list[:8] %}
+                        <tr>
+                            <td class="text-nowrap fw">{{ item.name }}</td>
+                            <td class="text-center">{{ item.count }}</td>
+                            <td class="text-nowrap">{{ item.managers | join(', ') }}</td>
+                            <td class="numeric text-end" style="padding-right: 15px;">
+                                {{ "{:,.0f}".format(item.total_points) }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+
+                    {# Hidden part of the table #}
+                    <tbody class="collapse small" id="extraRiders">
+                        {% for item in ownership_list[8:] %}
+                        <tr>
+                            <td class="text-nowrap">{{ item.name }}</td>
+                            <td class="text-center">{{ item.count }}</td>
+                            <td class="text-nowrap">{{ item.managers | join(', ') }}</td>
+                            <td class="numeric text-end" style="padding-right: 15px;">
+                                {{ "{:,.0f}".format(item.total_points) }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+                {# Expand Button - Only show if there are more than 10 riders #}
+                {% if ownership_list | length > 8 %}
+                <div class="text-center mt-2">
+                    <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#extraRiders" aria-expanded="false" aria-controls="extraRiders" onclick="this.textContent = this.textContent === 'Show More' ? 'Show Less' : 'Show More'">
+                        Show More
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
     {% endif %}
 
     {% if results %}

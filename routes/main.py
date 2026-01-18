@@ -115,6 +115,9 @@ def stage():
 
     roster = data_roster[0]['rider']
     datasets = []
+    rider_ownership_map = {}
+    ownership_list = []
+
     if roster is not None:
     
         for row in data_roster:
@@ -123,6 +126,25 @@ def stage():
             last_name = ' '.join(name_parts[1:]) if len(name_parts) > 1 else name_parts[0]
             rider = f"{last_name} ({row['cost']} - {row['total']})"
             table_data[row["team_manager"]].append((rider, row["cost"]))
+
+            r_name = row['rider']
+            if r_name not in rider_ownership_map:
+                rider_ownership_map[r_name] = {
+                    'name': r_name,
+                    'count': 0,
+                    'managers': [],
+                    'total_points': row['total'] # Optional: if you want to sort by points
+                }
+            
+            rider_ownership_map[r_name]['count'] += 1
+            rider_ownership_map[r_name]['managers'].append(row["team_manager"])
+
+        # 3. Convert to a list and Sort (Example: by Count descending, then Name)
+        ownership_list = sorted(
+            rider_ownership_map.values(), 
+            key=lambda x: (x['count'], x['total_points']), 
+            reverse=True
+        )
         
         # Sort riders within each manager's list by total points (descending)
         for manager in table_data:
@@ -178,7 +200,8 @@ def stage():
                            results=results,
                            roster=roster,
                            prev_stage=prev_stage, 
-                           next_stage=next_stage
+                           next_stage=next_stage,
+                           ownership_list = ownership_list
                            )
 
 @main_bp.route('/riders', methods=['GET'])
