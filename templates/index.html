@@ -5,61 +5,68 @@
 
 {% block content %}
 
-    
-    <h3>Upcoming races</h3>
+<h3 class="mt-3">Upcoming races</h3>
 
-    <!-- Table with races here: -->
-    <div style="display: flex; justify-content: center; gap: 10px; width: 100%; padding: 10px;">
-        <table class="table table-bordered table-hover mt-2" style="width: auto; table-layout: fixed;">
-            <thead class="table-primary">
-                <tr>
-                    {% for column in columns[2:] %}
-                        <th>
-                            {{ column }}
-                        </th>
-                    {% endfor %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in data %}
-                    <tr data-url="{{ url_for('main.stage') }}?stage_id={{ row['stage_id'] }}" onclick="redirectToLink(this)" {% if row['warning'] == 1 %}class="table-warning"{% endif %}>
-                        {% for cell in row[2:] %}
-                            <td class="{% if cell is number %}numeric{% endif %}" style=" text-align: {% if cell is number %}right{% else %}left{% endif %};">
-                                {{ "{:,.0f}".format(cell) if cell is number else cell }}
-                            </td>
-                        {% endfor %}
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <h3>Overall teams</h3>
-    <!-- Table with races here: -->
-    <div style="display: flex; justify-content: center; gap: 10px; width: 100%; padding: 10px;">
-        <table class="table table-bordered table-hover mt-2" style="width: auto; table-layout: fixed;">
-            <thead class="table-primary">
-                <tr>
-                    {% for column in columns_2 %}
-                        <th>
-                            {{ column }}
-                        </th>
-                    {% endfor %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in data_2 %}
+<div class="row">
+    <div class="col-12 col-lg-8 mx-auto">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover mt-2 w-auto mx-auto">
+                <thead class="table-primary text-center">
                     <tr>
-                        {% for cell in row %}
-                            <td class="{% if cell is number %}numeric{% endif %}" style=" text-align: {% if cell is number %}right{% else %}left{% endif %};">
-                                {{ "{:,.0f}".format(cell) if cell is number else cell }}
-                            </td>
+                        {% for column in columns[2:] %}
+                            <th class="text-nowrap">{{ column }}</th>
                         {% endfor %}
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for row in data %}
+                        <tr data-url="{{ url_for('main.stage') }}?stage_id={{ row['stage_id'] }}" 
+                            onclick="redirectToLink(this)" 
+                            class="{% if row['warning'] == 1 %}table-warning{% endif %}" 
+                            style="cursor: pointer;">
+                            {% for cell in row[2:] %}
+                                <td class="{% if cell is number %}numeric{% endif %} text-nowrap" 
+                                    style="text-align: {% if cell is number %}right{% else %}left{% endif %};">
+                                    {{ "{:,.0f}".format(cell) if cell is number else cell }}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
+</div>
+
+<h3 class="mt-5">Overall teams</h3>
+
+<div class="row">
+    <div class="col-12 col-lg-8 mx-auto">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover mt-2 w-auto mx-auto">
+                <thead class="table-primary text-center">
+                    <tr>
+                        {% for column in columns_2 %}
+                            <th class="text-nowrap">{{ column }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in data_2 %}
+                        <tr>
+                            {% for cell in row %}
+                                <td class="{% if cell is number %}numeric{% endif %} text-nowrap" 
+                                    style="text-align: {% if cell is number %}right{% else %}left{% endif %};">
+                                    {{ "{:,.0f}".format(cell) if cell is number else cell }}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
     <!-- Scatter plot here: -->
     <div class="container">
