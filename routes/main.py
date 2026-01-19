@@ -393,3 +393,13 @@ def run_worker():
 
     # Just redirect back to the log page immediately
     return redirect(url_for('main.view_log'))
+
+# Error handlers ---------------------------------------------------
+@main_bp.app_errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+@main_bp.app_errorhandler(500)
+def page_not_found(e):
+    return render_template('500.html'), 404
+

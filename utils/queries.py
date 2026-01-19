@@ -247,7 +247,8 @@ where 0=0
 group by 
  --t.team_name,
  t.team_manager
-order by sum(pts) desc"""
+order by sum(pts) desc
+"""
 
 
 sql_report = """
