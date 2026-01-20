@@ -133,6 +133,7 @@ def get_teams(race):
 def get_roster(race, stage, team, session=None):
     url = get_team_stage_url(race['url'], team['team_code'], stage['stage_number'])
     roster = []
+    print(url)
 
     # if session if available use it, otherwise requests (standalone)
     fetcher = session if session else requests
