@@ -48,7 +48,7 @@ sql_stage_results = """
         t.stage_rank as "No.",
         t.team_name "Team", 
         --t.team_manager "Manager",
-        case when t.team_manager = 'Simis' then 'Baba Vanga' else t.team_manager end as "Manager, 
+        case when t.team_manager = 'Simis' then 'Baba Vanga' else t.team_manager end as "Manager", 
         t.pts "Stage points"
         FROM v_stage_points t
         where t.stage_id = ?
@@ -64,7 +64,7 @@ sql_gc_results = """
         case when t.results_ready = 0 then 1 else t.race_rank end as "No.",
         t.team_name "Team", 
         --t.team_manager "Manager", 
-        case when t.team_manager = 'Simis' then 'Baba Vanga' else t.team_manager end as "Manager, 
+        case when t.team_manager = 'Simis' then 'Baba Vanga' else t.team_manager end as "Manager", 
         case when t.results_ready = 0 then null else t.cum_pts end as "GC points"
         FROM v_stage_points t
         where t.stage_id = ?
