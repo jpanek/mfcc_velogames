@@ -17,6 +17,11 @@ def get_riders_url(base_url):
     url = base_url+"riders.php"
     return url
 
+def get_riders_stage_url(base_url, stage):
+    # Format the URL with the provided parameters
+    url = f"{base_url}ridescore.php?&ga=13&st={stage['stage_number']}"
+    return url
+
 def get_team_stage_url(base_url, team, stage):
     # Format the URL with the provided parameters
     url = f"{base_url}teamroster.php?tid={team}&ga=13&st={stage}"
@@ -130,10 +135,42 @@ def get_teams(race):
 
     return teams
 
+def get_rider_stage(race, stage):
+
+    url = get_riders_stage_url(race['url'], stage)
+    response = requests.get(url)
+    response.raise_for_status()
+    soup = BeautifulSoup(response.text, 'html.parser')
+    riders_data = []
+
+    # Find all list items within the users div
+    for li in soup.select('#users ul.list li'):
+        # Extract Name and ID
+        link = li.find('h3', class_='name').find('a')
+        rider_name = link.get_text(strip=True)
+        
+        # Extract ID from the href using regex
+        href = link.get('href', '')
+        rider_id_match = re.search(r'rider=(\d+)', href)
+        rider_id = rider_id_match.group(1) if rider_id_match else None
+        
+        # Extract Points
+        # Points are in the first 'p' tag with class 'born' inside the float:right span
+        points_text = li.find('span', style="float:right").find('p', class_='born').get_text(strip=True)
+        rider_points = int(re.search(r'\d+', points_text).group())
+
+        riders_data.append({
+            'rider_id': rider_id,
+            'rider_name': rider_name,
+            'rider_points': rider_points
+        })
+
+    return riders_data
+
 def get_roster(race, stage, team, session=None):
     url = get_team_stage_url(race['url'], team['team_code'], stage['stage_number'])
     roster = []
-    print(url)
+    #print(url)
 
     # if session if available use it, otherwise requests (standalone)
     fetcher = session if session else requests
@@ -220,7 +257,7 @@ def get_roster(race, stage, team, session=None):
 
 def get_riders(url):
     url = url+"riders.php"
-    print(url)
+    #print(url)
     response = requests.get(url)
     response.raise_for_status()
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -275,6 +312,3 @@ def get_riders(url):
         })
 
     return data
-
-
-

@@ -114,7 +114,7 @@ def get_stages_db(race,all_stages=False, stage_id=None):
         select * from stages 
         where 0=0
         and   race_id = ?
-        and   date(stage_date) <= date('now')
+        --and   date(stage_date) <= date('now')
         """
         params = (race_id,)
     elif stage_id is not None:
@@ -123,7 +123,7 @@ def get_stages_db(race,all_stages=False, stage_id=None):
         where 0=0
         and   race_id = ?
         and   stage_id = ?
-        and   stage_date <= date('now')
+        --and   stage_date <= date('now')
         """
         params = (race_id,stage_id,)
     else:
@@ -163,6 +163,25 @@ def get_teams_db(race):
     stages = c.fetchall()
     conn.close()
     return stages
+
+def get_rosters_db(race,stage):
+    #conn = sqlite3.connect(db_path)
+    conn = sqlite3.connect(get_db_path())
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+    race_id = race['race_id']
+    stage_id = stage['stage_id']
+
+    sql = """
+    select * from rosters 
+    where race_id = ?
+    and   stage_id = ?
+    """
+    c.execute(sql, (race_id, stage_id,))
+
+    rosters = c.fetchall()
+    conn.close()
+    return rosters
 
 def insert_riders_db(race, riders_data):
     #conn = sqlite3.connect(db_path)
@@ -288,6 +307,35 @@ def insert_roster_db(race, stage, team, roster):
                 rider_data['total'],
                 rider_data['rider_code']
             ))
+
+    conn.commit()
+    conn.close()
+
+def insert_stage_points_db(race, stage, riders_data):
+    race_id = race['race_id']
+    stage_id = stage['stage_id']
+    conn = sqlite3.connect(get_db_path())
+    c = conn.cursor()
+
+    for i, rider_data in enumerate(riders_data):
+        rider_code = rider_data['rider_id']
+        rider_name = rider_data['rider_name']
+        rider_points = rider_data['rider_points']
+
+        # 1. Insert if new
+        c.execute("""
+            INSERT OR IGNORE INTO stage_points (race_id, stage_id, rider_code, rider_name, points)
+            VALUES (?, ?, ?, ?, ?)
+        """, (race_id, stage_id, rider_code, rider_name, rider_points))
+
+        # 2. Update if exists (Trigger handles updated_date automatically)
+        c.execute("""
+            UPDATE stage_points
+            SET rider_name = ?, points = ?
+            WHERE race_id = ? AND stage_id = ? AND rider_code = ?
+        """, (rider_name, rider_points, race_id, stage_id, rider_code))
+        
+        print(f"\tLoaded rider: No {i+1} {rider_name} scored {rider_points} points")
 
     conn.commit()
     conn.close()

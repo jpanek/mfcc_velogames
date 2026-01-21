@@ -1,8 +1,8 @@
 # run_velo.py
 
-from db_functions import get_races_db, get_stages_db, get_teams_db
-from db_functions import insert_riders_db, insert_stages_db, insert_teams_db, insert_roster_db
-from web_functions import get_riders, get_stages, get_teams, get_roster
+from db_functions import get_races_db, get_stages_db, get_teams_db, get_rosters_db
+from db_functions import insert_riders_db, insert_stages_db, insert_teams_db, insert_roster_db, insert_stage_points_db
+from web_functions import get_riders, get_stages, get_teams, get_roster, get_rider_stage
 from datetime import datetime
 import time as time_pkg
 import random
@@ -43,29 +43,42 @@ for race in races:
         # one session for all:
         with requests.Session() as session:
             stages,teams = [],[]
+            
             stages = get_stages_db(race)
-            #stages = get_stages_db(race, all_stages=True)
+            #stages = get_stages_db(race, all_stages=False, stage_id=696)
+            
             teams = get_teams_db(race)
             #load roasters and results:
             for i,stage in enumerate(stages):
-                for k,team in enumerate(teams):
-                    
-                    print(f"\tLoading: Team No.{k+1}: {race['name']} - {stage['stage_name']} - {team['team_name']}")
-                    
-                    roster = get_roster(race,stage,team, session=session)
+                print(f"Working on Stage: {stage['stage_number']} - {stage['stage_name']}")
 
-                    if roster is None:
-                        print('\t\t No rosters are published yet')
-                    else:
-                        insert_roster_db(race,stage,team,roster)
-                        print('\t\t Rosters loaded ....')
+                rosters = get_rosters_db(race, stage)
 
-                    del roster
-                    gc.collect()
+                if len(rosters):
+                    #case A) Rosters are already loaded, only need to refresh the results of riders
 
-                    wait = random.uniform(4, 6)
-                    print(f'\t\t Waiting for {round(wait,2)} seconds ...')
-                    time_pkg.sleep(wait)
+                    riders_data = get_rider_stage(race=race, stage=stage)
+                    insert_stage_points_db(race=race, stage=stage, riders_data=riders_data)
+                else:
+                    #case B) Rosters are not known for a stage, load them first
+                    for k,team in enumerate(teams):
+                        
+                        print(f"\tLoading teams: Team No.{k+1}: {race['name']} - {stage['stage_name']} - {team['team_name']}")
+                        
+                        roster = get_roster(race,stage,team, session=session)
+
+                        if roster is None:
+                            print('\t\t No rosters are published yet')
+                        else:
+                            insert_roster_db(race,stage,team,roster)
+                            print('\t\t Rosters loaded ....')
+
+                        del roster
+                        gc.collect()
+
+                        wait = random.uniform(4, 6)
+                        print(f'\t\t Waiting for {round(wait,2)} seconds ...')
+                        time_pkg.sleep(wait)
             if not len(stages): print(f'\tNo stages to process for {race['name']} ...')
 
 time_now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')

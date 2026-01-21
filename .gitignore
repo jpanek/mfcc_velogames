@@ -18,6 +18,9 @@ venv/
 *.sqlite3
 instance/
 
+#working folders
+testing/
+
 # Dependency files
 #requirements.txt
 
