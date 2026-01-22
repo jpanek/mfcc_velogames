@@ -56,11 +56,12 @@ for race in races:
 
                 if len(rosters):
                     #case A) Rosters are already loaded, only need to refresh the results of riders
-
+                    print(f"\t ** Rosters are already loaded => Only refreshing the results ...")
                     riders_data = get_rider_stage(race=race, stage=stage)
                     insert_stage_points_db(race=race, stage=stage, riders_data=riders_data)
                 else:
                     #case B) Rosters are not known for a stage, load them first
+                    print(f"\t ** Rosters initial load started ...")
                     for k,team in enumerate(teams):
                         
                         print(f"\tLoading teams: Team No.{k+1}: {race['name']} - {stage['stage_name']} - {team['team_name']}")
