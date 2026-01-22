@@ -335,7 +335,9 @@ def insert_stage_points_db(race, stage, riders_data):
             WHERE race_id = ? AND stage_id = ? AND rider_code = ?
         """, (rider_name, rider_points, race_id, stage_id, rider_code))
         
-        print(f"\tLoaded rider: No {i+1} {rider_name} scored {rider_points} points")
+        #print(f"\tLoaded rider: No {i+1} {rider_name} scored {rider_points} points")
+
+    print(f"\tLoaded points for {i+1} riders.")
 
     conn.commit()
     conn.close()
