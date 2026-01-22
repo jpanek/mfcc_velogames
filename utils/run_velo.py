@@ -78,6 +78,9 @@ for race in races:
                         gc.collect()
 
                         wait = random.uniform(4, 6)
+                        if k % 4 == 0:
+                            wait += random.uniform(5,15)
+                            
                         print(f'\t\t Waiting for {round(wait,2)} seconds ...')
                         time_pkg.sleep(wait)
             if not len(stages): print(f'\tNo stages to process for {race['name']} ...')

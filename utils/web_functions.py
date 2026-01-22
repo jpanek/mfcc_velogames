@@ -7,6 +7,15 @@ from datetime import datetime, timedelta
 
 mfcc_league = 61627774
 
+HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+    'Accept-Language': 'en-US,en;q=0.5',
+    'Referer': 'https://www.velogames.com/',
+    'Connection': 'keep-alive',
+}
+timeout_seconds = (3.05, 15)
+
 def parse_value(value):
     """Helper function to handle values like '-' and convert them to 0."""
     if value == '-':
@@ -38,7 +47,7 @@ def get_team_url(base_url):
 def get_stages(race):
     # Send a GET request to fetch the HTML page
     league_url = race['url'] + "races.php"
-    response = requests.get(league_url)
+    response = requests.get(league_url, headers=HEADERS)
     response.raise_for_status()
 
     # Parse the page with BeautifulSoup
@@ -100,9 +109,7 @@ def get_stages(race):
 
 def get_teams(race):
     url = get_team_url(race['url'])
-    print(url)
-
-    response = requests.get(url)
+    response = requests.get(url, headers=HEADERS)
     response.raise_for_status()
     
     # Parse the page with BeautifulSoup
@@ -135,10 +142,17 @@ def get_teams(race):
 
     return teams
 
-def get_rider_stage(race, stage):
+def get_rider_stage(race, stage, session=None):
 
     url = get_riders_stage_url(race['url'], stage)
-    response = requests.get(url)
+
+    fetcher = session if session else requests
+
+    #play with headers to not look like a bot:
+    current_headers = HEADERS.copy()
+    current_headers['Referer'] = f"{race['url']}leaguescores.php?league={mfcc_league}"
+
+    response = fetcher.get(url, headers=current_headers, timeout=timeout_seconds)
     response.raise_for_status()
     soup = BeautifulSoup(response.text, 'html.parser')
     riders_data = []
@@ -175,8 +189,13 @@ def get_roster(race, stage, team, session=None):
     # if session if available use it, otherwise requests (standalone)
     fetcher = session if session else requests
 
-    # Send the GET request and parse the page
-    response = fetcher.get(url)
+    #play with headers to not look like a bot:
+    current_headers = HEADERS.copy()
+    current_headers['Referer'] = f"{race['url']}leaguescores.php?league={mfcc_league}"
+
+    # Send the GET request and parse the page    
+    response = fetcher.get(url, headers=current_headers, timeout=timeout_seconds)
+
     response.raise_for_status()
 
     only_table = SoupStrainer('table', {'class': 'responsive'})
@@ -258,7 +277,7 @@ def get_roster(race, stage, team, session=None):
 def get_riders(url):
     url = url+"riders.php"
     #print(url)
-    response = requests.get(url)
+    response = requests.get(url,headers=HEADERS)
     response.raise_for_status()
     soup = BeautifulSoup(response.text, 'html.parser')
 
