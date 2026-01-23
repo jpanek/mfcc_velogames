@@ -34,25 +34,41 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm py-3">
         <div class="container">
-            <a class="navbar-brand" href="#">Velogames</a>
+            <a class="navbar-brand" href="{{ url_for('main.index') }}"> Velogames</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav flex-wrap">
                     <li class="nav-item"><a class="nav-link" href="{{ url_for('main.index') }}">Home</a></li>
-                    {% for race in g.races %}
+                
+                    {% for race in g.races if race.is_active %}
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="{{ url_for('main.race') }}?race_id={{ race['race_id'] }}" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                {{ race['name'] }}
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                                {{ race.display_name }}
                             </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="{{ url_for('main.race') }}?race_id={{ race['race_id'] }}">Stages & Results</a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('main.riders') }}?race_id={{ race['race_id'] }}">Riders stats</a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('main.teams') }}?race_id={{ race['race_id'] }}">Teams stats</a></li>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{{ url_for('main.race', race_id=race.race_id) }}">Stages & Results</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('main.riders', race_id=race.race_id) }}">Riders Stats</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('main.teams', race_id=race.race_id) }}">Teams Stats</a></li>
                             </ul>
                         </li>
                     {% endfor %}
+                
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle " href="#" id="archiveDropdown" data-bs-toggle="dropdown">
+                            Older races:
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            {% for race in g.races if not race.is_active %}
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('main.race', race_id=race.race_id) }}">
+                                        {{ race.display_name }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
                 </ul>
             </div>
         </div>

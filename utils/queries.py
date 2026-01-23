@@ -268,6 +268,19 @@ group by
 order by sum(pts) desc
 """
 
+sql_navbar = """
+SELECT 
+    name || '-' || substr(year, -2) AS display_name, 
+    race_id,
+    year,
+    CASE 
+        WHEN ROW_NUMBER() OVER (ORDER BY end_date DESC) <= 5 THEN 1 
+        ELSE 0 
+    END AS is_active
+FROM races 
+ORDER BY end_date DESC;
+"""
+
 sql_report = """
 select  
  s.stage_category,

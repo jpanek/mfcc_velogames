@@ -10,8 +10,26 @@
     }
 </script>
 
-<!-- <div class="container mt-5"> -->
-<h3 class="mb-1">{{ title }}</h3>
+<div class="text-center mb-4">
+    <h1 class="h3 mb-3">{{ title }}</h1>
+    
+    <div class="d-flex justify-content-center">
+        <ul class="nav nav-underline small">
+            <li class="nav-item">
+                <a class="nav-link {% if request.endpoint == 'main.race' %}active link-dark fw-bold{% else %}link-secondary{% endif %}" 
+                   href="{{ url_for('main.race', race_id=request.args.get('race_id')) }}">Stages & Results</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.endpoint == 'main.riders' %}active link-dark fw-bold{% else %}link-secondary{% endif %}" 
+                   href="{{ url_for('main.riders', race_id=request.args.get('race_id')) }}">Rider Stats</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.endpoint == 'main.teams' %}active link-dark fw-bold{% else %}link-secondary{% endif %}" 
+                   href="{{ url_for('main.teams', race_id=request.args.get('race_id')) }}">Team Stats</a>
+            </li>
+        </ul>
+    </div>
+</div>
 
 <div class="container-fluid">
     <div class="row justify-content-center">
