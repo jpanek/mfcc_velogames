@@ -86,7 +86,7 @@ SELECT
  r.name as 'Race',
  s.stage_name as 'Stage',
  date(s.stage_date) as 'Date',
- time(s.stage_date) as 'Cut-Off time',
+ --time(s.stage_date) as 'Cut-Off time',
  ifnull(sp.stage_1,'') as 'Stage winner',
  ifnull(sp.race_1,'') as 'GC Leader'
 FROM races r
