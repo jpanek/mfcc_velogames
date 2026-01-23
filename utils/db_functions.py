@@ -317,6 +317,7 @@ def insert_stage_points_db(race, stage, riders_data):
     conn = sqlite3.connect(get_db_path())
     c = conn.cursor()
 
+    i = 0
     for i, rider_data in enumerate(riders_data):
         rider_code = rider_data['rider_id']
         rider_name = rider_data['rider_name']
@@ -337,7 +338,10 @@ def insert_stage_points_db(race, stage, riders_data):
         
         #print(f"\tLoaded rider: No {i+1} {rider_name} scored {rider_points} points")
 
-    print(f"\tLoaded points for {i+1} riders.")
+    if i:
+        print(f"\t --> Loaded points for {i+1} riders.")
+    else
+        print(f"\t --> x- results are not ready yet.")
 
     conn.commit()
     conn.close()
