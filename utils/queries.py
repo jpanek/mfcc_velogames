@@ -252,6 +252,21 @@ group by
 order by sum(pts) desc
 """
 
+sql_teams_overall_year = """
+select 
+ rank() over (order by sum(pts) desc) Position,
+ t.team_manager "Manager",
+ sum(pts) as "Points",
+-- sum(stage_gap) as "Gap",
+ sum(case when stage_rank = 1 then 1 else 0 end) as "Wins count"
+ from v_stage_results_detail t 
+where 0=0
+and   t.year = 2026
+group by 
+ --t.team_name,
+ t.team_manager
+order by sum(pts) desc
+"""
 
 sql_report = """
 select  

@@ -38,6 +38,69 @@
     </div>
 </div>
 
+    <!--V1: Tables for current stage results + GC after current stage -->
+    <div class="row justify-content-center g-4">
+        
+        <div class="col-12 col-xl-auto">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover w-auto mx-auto">
+                    <caption style="caption-side: top; font-size: 1.2rem; font-weight: bold; margin-bottom: 10px;" class="text-center text-dark">
+                        This years teams
+                    </caption>    
+                    <thead class="table-primary small">
+                        <tr>
+                            {% for column in columns_2 %}
+                                <th class="text-nowrap fw-normal">{{ column }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody class="small">
+                        {% for row in data_2 %}
+                            <tr>
+                                {% for cell in row %}
+                                    <td class="{% if cell is number %}numeric{% endif %} text-nowrap" 
+                                        style="text-align: {% if cell is number %}right{% else %}left{% endif %};">
+                                        {{ "{:,.0f}".format(cell) if cell is number else cell }}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    
+        <div class="col-12 col-xl-auto">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover w-auto mx-auto">
+                    <caption style="caption-side: top; font-size: 1.2rem; font-weight: bold; margin-bottom: 10px;" class="text-center text-dark">
+                        Overall teams
+                    </caption>    
+                    <thead class="table-primary small">
+                        <tr>
+                            {% for column in columns_2 %}
+                                <th class="text-nowrap fw-normal">{{ column }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody class="small">
+                        {% for row in data_3 %}
+                            <tr>
+                                {% for cell in row %}
+                                    <td class="{% if cell is number %}numeric{% endif %} text-nowrap" 
+                                        style="text-align: {% if cell is number %}right{% else %}left{% endif %};">
+                                        {{ "{:,.0f}".format(cell) if cell is number else cell }}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>   
+
+
 <h3 class="mt-5">Overall teams</h3>
 
 <div class="row">

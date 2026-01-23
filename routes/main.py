@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, json, current_app, redire
 from utils.db_functions import get_data_from_db, get_pd_from_db, print_first_rows
 from utils.queries import sql_stages_podium, sql_stages_chart, sql_stage_results, sql_stage_roster, sql_gc_results, sql_next_stages
 from utils.queries import sql_calendar, sql_stage, sql_riders_rank, sql_rider, sql_riders_rank_all, sql_races
-from utils.queries import sql_teams, sql_teams_chart, sql_team, sql_teams_overall, sql_report
+from utils.queries import sql_teams, sql_teams_chart, sql_team, sql_teams_overall, sql_teams_overall_year, sql_report
 from datetime import datetime
 import os
 import subprocess
@@ -14,7 +14,8 @@ main_bp = Blueprint('main',__name__)
 @main_bp.route('/')
 def index():
     columns, data = get_data_from_db(sql_calendar)
-    columns_2, data_2 = get_data_from_db(sql_teams_overall)
+    columns_2, data_2 = get_data_from_db(sql_teams_overall_year)
+    columns_3, data_3 = get_data_from_db(sql_teams_overall)
 
     df = get_pd_from_db(sql_riders_rank_all)
 
@@ -33,7 +34,9 @@ def index():
                            data=data,
                            chart_data=chart_data,
                            columns_2 = columns_2,
-                           data_2 = data_2
+                           data_2 = data_2,
+                           columns_3 = columns_3,
+                           data_3 = data_3
                            )
 
 @main_bp.route('/race', methods=['GET'])
