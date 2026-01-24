@@ -65,7 +65,13 @@ for race in races:
                 elif len(rosters):
                     #CASE B) Rosters are already loaded, only need to refresh the results 
                     print(f"\t ** Rosters are already loaded => Only refreshing the results ...")
-                    riders_data = get_rider_stage(race=race, stage=stage)
+
+                    # SLEEP jitter
+                    wait = random.uniform(45, 130)
+                    print(f'\t\t Waiting for {round(wait,2)} seconds ...')
+                    time_pkg.sleep(wait)
+
+                    riders_data = get_rider_stage(race=race, stage=stage, session=session)
                     insert_stage_points_db(race=race, stage=stage, riders_data=riders_data)
 
                     #here send email with information about results being loaded:
@@ -76,6 +82,13 @@ for race in races:
                     print(f"\t ** Rosters initial load started ...")
                     for k,team in enumerate(teams):
                         
+                        # SLEEP jitter
+                        wait = random.uniform(4, 6)
+                        if k % 4 == 0:
+                            wait += random.uniform(5,15)
+                        print(f'\t\t Waiting for {round(wait,2)} seconds ...')
+                        time_pkg.sleep(wait)
+
                         print(f"\tLoading teams: Team No.{k+1}: {race['name']} - {stage['stage_name']} - {team['team_name']}")
                         
                         roster = get_roster(race,stage,team, session=session)
@@ -89,12 +102,6 @@ for race in races:
                         del roster
                         gc.collect()
 
-                        wait = random.uniform(4, 6)
-                        if k % 4 == 0:
-                            wait += random.uniform(5,15)
-
-                        print(f'\t\t Waiting for {round(wait,2)} seconds ...')
-                        time_pkg.sleep(wait)
             if not len(stages): print(f'\tNo stages to process for {race['name']} ...')
 
 time_now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
