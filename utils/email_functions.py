@@ -6,6 +6,15 @@ import smtplib
 from email.message import EmailMessage
 from email.utils import formataddr
 from datetime import datetime
+from db_functions import get_data_from_db
+from queries import sql_stage_results, sql_gc_results
+
+
+# ---------------------------- MOVE TO CONFIG ----------------------------
+#recipients = ['juraj.panek@gmail.com', 'janieh87@gmail.com']
+recipients = ['juraj.panek@gmail.com']
+recipients_string = ", ".join(recipients)
+# ---------------------------- MOVE TO CONFIG ----------------------------
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -18,7 +27,13 @@ except ImportError:
 
 def send_email(recipient, subject, body):
     msg = EmailMessage()
-    msg.set_content(body)
+    
+    # 1. Set a plain-text fallback for preview snippets/basic clients
+    msg.set_content("Please use an HTML-compatible email client to view these results.")
+    
+    # 2. Add the HTML version
+    msg.add_alternative(body, subtype='html')
+
     msg['Subject'] = subject
     msg['From'] = formataddr(("MFCC Velogames", Config.MAIL_USERNAME))
     msg['To'] = recipient
@@ -27,26 +42,77 @@ def send_email(recipient, subject, body):
         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
             smtp.login(Config.MAIL_USERNAME, Config.MAIL_PASSWORD)
             smtp.send_message(msg)
-            print(f"Email sent successfully to {recipient}!")
+            print(f"\t** [EMAIL] Email sent successfully to {recipient}")
     except smtplib.SMTPAuthenticationError:
-        print("Authentication Error: Check your Gmail App Password in config.py.")
+        print("\t** [EMAIL] Authentication Error: Check your Gmail App Password in config.py.")
     except Exception as e:
-        print(f"Failed to send email: {e}")
+        print(f"\t** [EMAIL] Failed to send email: {e}")
 
+def email_stage_body(race_name, stage_name, columns, data, columns_gc, data_gc):
+    def build_table(cols, rows):
+        header = "".join([f"<th style='border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f8f9fa;'>{col}</th>" for col in cols[4:]])
+        
+        body_rows = ""
+        for row in rows:
+            body_rows += "<tr>"
+            for item in row[4:]:
+                # Check if item is a number (int or float)
+                if isinstance(item, (int, float)):
+                    formatted_item = f"{item:,}"
+                else:
+                    formatted_item = item
+                    
+                body_rows += f"<td style='border: 1px solid #ddd; padding: 8px;'>{formatted_item}</td>"
+            body_rows += "</tr>"
+        
+        return f"<table style='width: 100%; border-collapse: collapse; margin-bottom: 30px;'><thead><tr>{header}</tr></thead><tbody>{body_rows}</tbody></table>"
 
-#print(Config.MAIL_USERNAME)
-#print(Config.MAIL_PASSWORD)
+    stage_table = build_table(columns, data)
+    gc_table = build_table(columns_gc, data_gc)
 
-now = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+    html = f"""
+    <html>
+      <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #ffffff; padding: 20px;">
+        <div style="max-width: 700px; margin: auto; border: 1px solid #eee; padding: 25px; border-radius: 8px;">
+          <h2 style="color: #2c3e50; border-bottom: 3px solid #e67e22; padding-bottom: 10px; margin-top: 0;">{race_name}</h2>
+          
+          <h3 style="color: #d35400;">Stage Results: {stage_name}</h3>
+          {stage_table}
+          
+          <h3 style="color: #2980b9;">General Classification (GC)</h3>
+          {gc_table}
+          
+          <p style="font-size: 0.85em; color: #7f8c8d; border-top: 1px solid #eee; pt: 15px;">
+            Sent by MFer<br>
+            Updated at: {datetime.now().strftime("%H:%M:%S on %d-%m-%Y")}
+          </p>
+        </div>
+      </body>
+    </html>
+    """
+    return html
 
-#recipients = ['juraj.panek@gmail.com', 'janieh87@gmail.com']
-recipients = ['juraj.panek@gmail.com']
-recipients_string = ", ".join(recipients)
+def send_email_stage_results(race, stage):
+    race_name = race['name']
+    stage_name = stage['stage_name']
+    stage_id = stage['stage_id']
 
-print(recipients_string)
+    params = (stage_id,)
 
-send_email(
-    recipient=recipients_string, 
-    subject='[TEST] MFCC Velogames results', 
-    body=f"Results were updated as of {now}"
-)
+    columns, data = get_data_from_db(sql_stage_results, params)
+    columns_gc, data_gc = get_data_from_db(sql_gc_results, params)
+
+    email_body = email_stage_body(
+        race_name=race_name,
+        stage_name=stage_name,
+        columns=columns,
+        data = data,
+        columns_gc=columns_gc,
+        data_gc=data_gc
+    )
+
+    email_subject = f"{race_name} - {stage_name} - results"
+
+    recipients_string = ", ".join(Config.RECIPIENTS)
+
+    send_email(recipient=recipients_string, subject=email_subject, body=email_body)

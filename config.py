@@ -29,3 +29,8 @@ COLOR_LIST = [
 class Config:
     MAIL_USERNAME = "juraj.panek@gmail.com"
     MAIL_PASSWORD = "fbcsryrswykpqyxc"
+    
+    RECIPIENTS = [
+        'juraj.panek@gmail.com', 
+        #'janieh87@gmail.com'
+    ]

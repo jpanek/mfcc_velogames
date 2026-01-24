@@ -3,6 +3,7 @@
 from db_functions import get_races_db, get_stages_db, get_teams_db, get_rosters_db, get_rider_stage_db
 from db_functions import insert_riders_db, insert_stages_db, insert_teams_db, insert_roster_db, insert_stage_points_db
 from web_functions import get_riders, get_stages, get_teams, get_roster, get_rider_stage
+from email_functions import send_email_stage_results
 from datetime import datetime
 import time as time_pkg
 import random
@@ -45,7 +46,7 @@ for race in races:
             stages,teams = [],[]
             
             stages = get_stages_db(race)
-            stages = get_stages_db(race, all_stages=False, stage_id=698)
+            #stages = get_stages_db(race, all_stages=False, stage_id=698)
             
             teams = get_teams_db(race)
             #load roasters and results:
@@ -56,15 +57,22 @@ for race in races:
                 stage_points = get_rider_stage_db(race,stage)
 
                 if len(stage_points):
+                    # CASE A) Results for the stage are in place, no need to refresh anything
                     print(f"\t ** Results are already loaded => Skipping refresh ...")
+                    
+                    #send_email_stage_results(race, stage)
 
                 elif len(rosters):
-                    #case A) Rosters are already loaded, only need to refresh the results of riders
+                    #CASE B) Rosters are already loaded, only need to refresh the results 
                     print(f"\t ** Rosters are already loaded => Only refreshing the results ...")
                     riders_data = get_rider_stage(race=race, stage=stage)
                     insert_stage_points_db(race=race, stage=stage, riders_data=riders_data)
+
+                    #here send email with information about results being loaded:
+                    send_email_stage_results(race, stage)
+
                 else:
-                    #case B) Rosters are not known for a stage, load them first
+                    #CASE C) Rosters are not known for a stage, load them first
                     print(f"\t ** Rosters initial load started ...")
                     for k,team in enumerate(teams):
                         
