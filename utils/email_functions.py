@@ -111,7 +111,7 @@ def send_email_stage_results(race, stage):
         data_gc=data_gc
     )
 
-    email_subject = f"{race_name} - {stage_name} - results"
+    email_subject = f"[MFCC] {race_name} - {stage_name} - results"
 
     recipients_string = ", ".join(Config.RECIPIENTS)
 
