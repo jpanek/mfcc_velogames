@@ -32,5 +32,5 @@ class Config:
     
     RECIPIENTS = [
         'juraj.panek@gmail.com', 
-        #'janieh87@gmail.com'
+        'janieh87@gmail.com'
     ]
