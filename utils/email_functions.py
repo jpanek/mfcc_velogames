@@ -79,7 +79,7 @@ def email_stage_body(race_name, stage_name, columns, data, columns_gc, data_gc):
           <h3 style="color: #d35400;">Stage Results: {stage_name}</h3>
           {stage_table}
           
-          <h3 style="color: #2980b9;">General Classification (GC)</h3>
+          <h3 style="color: #2980b9;">GC after {stage_name}</h3>
           {gc_table}
           
           <p style="font-size: 0.85em; color: #7f8c8d; border-top: 1px solid #eee; pt: 15px;">
