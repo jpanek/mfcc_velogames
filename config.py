@@ -25,3 +25,7 @@ COLOR_LIST = [
     "#4682B4",  # Steel Blue
     "#FF69B4",  # Hot Pink
 ]
+
+class Config:
+    MAIL_USERNAME = "juraj.panek@gmail.com"
+    MAIL_PASSWORD = "fbcsryrswykpqyxc"

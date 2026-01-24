@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup, SoupStrainer
 import re
 from datetime import datetime, timedelta
 import sqlite3, os, sys
-from db_functions import get_races_db, get_stages_db, get_db_path, get_teams_db, insert_roster_db
+from db_functions import get_races_db, get_stages_db, get_db_path, get_teams_db, insert_roster_db, get_rider_stage_db
 from web_functions import get_roster
 mfcc_league = 61627774
 
@@ -88,6 +88,20 @@ def insert_stage_points_db(race, stage, riders_data):
 
     conn.commit()
     conn.close()
+
+
+races = get_races_db(current_flag=True)
+for race in races:
+    print(race['name'])
+
+    stages = get_stages_db(race,all_stages=True)
+
+    for stage in stages:
+        print(f"\t Stage {stage['stage_name']}")
+
+        stage_points = get_rider_stage_db(race,stage)
+        print(len(stage_points))
+        break
 
 '''
 for race in races:
