@@ -74,8 +74,9 @@ for race in races:
                     riders_data = get_rider_stage(race=race, stage=stage, session=session)
                     insert_stage_points_db(race=race, stage=stage, riders_data=riders_data)
 
-                    #here send email with information about results being loaded:
-                    send_email_stage_results(race, stage)
+                    if len(riders_data):
+                        #here send email with information about results being loaded:
+                        send_email_stage_results(race, stage)
 
                 else:
                     #CASE C) Rosters are not known for a stage, load them first
