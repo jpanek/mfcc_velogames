@@ -51,7 +51,7 @@ for race in races:
             teams = get_teams_db(race)
             #load roasters and results:
             for i,stage in enumerate(stages):
-                print(f"Working on Stage: {stage['stage_number']} - {stage['stage_name']}")
+                print(f"\nWorking on Stage: {stage['stage_number']} - {stage['stage_name']}")
 
                 rosters = get_rosters_db(race, stage) 
                 stage_points = get_rider_stage_db(race,stage)

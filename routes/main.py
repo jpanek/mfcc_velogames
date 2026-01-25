@@ -385,7 +385,7 @@ def run_worker():
         with open(log_path, "a") as log_file:
             log_file.write(f"\n*** [Manual Run Started via Web] ***\n")
             subprocess.Popen(
-                [python_executable, script_path],
+                [python_executable, "-u", script_path],
                 stdout=log_file,
                 stderr=log_file,
                 cwd=project_root
