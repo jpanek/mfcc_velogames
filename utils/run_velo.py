@@ -106,5 +106,5 @@ for race in races:
             if not len(stages): print(f'\tNo stages to process for {race['name']} ...')
 
 time_now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-print(f"Finished at {time_now}")
+print(f"\nFinished at {time_now}")
 
