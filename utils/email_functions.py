@@ -71,25 +71,29 @@ def email_stage_body(race_name, stage_name, columns, data, columns_gc, data_gc):
     gc_table = build_table(columns_gc, data_gc)
 
     html = f"""
-    <html>
-      <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #ffffff; padding: 20px;">
-        <div style="max-width: 700px; margin: auto; border: 1px solid #eee; padding: 25px; border-radius: 8px;">
-          <h2 style="color: #2c3e50; border-bottom: 3px solid #e67e22; padding-bottom: 10px; margin-top: 0;">{race_name}</h2>
-          
-          <h3 style="color: #d35400;">Stage Results: {stage_name}</h3>
-          {stage_table}
-          
-          <h3 style="color: #2980b9;">GC after {stage_name}</h3>
-          {gc_table}
-          
-          <p style="font-size: 0.85em; color: #7f8c8d; border-top: 1px solid #eee; pt: 15px;">
-            Sent by MFer<br>
-            Updated at: {datetime.now().strftime("%H:%M:%S on %d-%m-%Y")}
-          </p>
-        </div>
-      </body>
-    </html>
-    """
+        <html>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #ffffff; padding: 20px;">
+            <div style="max-width: 700px; margin: auto; border: 1px solid #eee; padding: 25px; border-radius: 8px;">
+            <h2 style="color: #2c3e50; border-bottom: 3px solid #e67e22; padding-bottom: 10px; margin-top: 0;">{race_name}</h2>
+            
+            <h3 style="color: #d35400;">Stage Results: {stage_name}</h3>
+            {stage_table}
+            
+            <h3 style="color: #2980b9;">GC after {stage_name}</h3>
+            {gc_table}
+            
+            <div style="margin-top: 20px; text-align: center;">
+                <a href="https://cyclingdatahub.com" style="background-color: #2980b9; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">View Full Standings</a>
+            </div>
+
+            <p style="font-size: 0.85em; color: #7f8c8d; border-top: 1px solid #eee; margin-top: 25px; padding-top: 15px;">
+                Sent by MFer | <a href="https://cyclingdatahub.com" style="color: #7f8c8d;">cyclingdatahub.com</a><br>
+                Updated at: {datetime.now().strftime("%H:%M:%S on %d-%m-%Y")}
+            </p>
+            </div>
+        </body>
+        </html>
+        """
     return html
 
 def send_email_stage_results(race, stage):
