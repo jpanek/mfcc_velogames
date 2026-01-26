@@ -51,11 +51,11 @@ if 1:
         print(f"Working on race: {race['name']} started at {time}")
         
         #load all riders
-        if 1:
+        if 0:
             riders_data = get_riders(race['url'])
             insert_riders_db(race, riders_data)
 
-        if 1:
+        if 0:
             #load all stages for a race
             stages = get_stages(race)
             #print_first_rows(stages,12)
