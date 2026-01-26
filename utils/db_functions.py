@@ -397,6 +397,50 @@ def get_pd_from_db(query, params=None):
 
     return df
 
+def propagate_roster_db(race_id, team_id, source_stage_id):
+
+    # Exclusion list for races with transfers/classics (add IDs as needed)
+    # Superclassice sixies must be excluded:
+    EXCLUDED_RACE_IDS = {2} 
+    
+    if race_id in EXCLUDED_RACE_IDS:
+        print(f"\t\t [DB] Race {race_id} excluded. Skipping propagation.")
+        return
+
+    conn = sqlite3.connect(get_db_path())
+    c = conn.cursor()
+    try:
+        query = """
+            INSERT OR IGNORE INTO rosters (
+                stage_id, race_id, team_id, rider, team, cost, 
+                finish, break_points, assist, total, stage, gc, 
+                rider_code, updated_date
+            )
+            SELECT 
+                target.stage_id, s.race_id, s.team_id, s.rider, s.team, s.cost,
+                0, 0, 0, 0, 0, 0, 
+                s.rider_code, datetime('now')
+            FROM rosters s
+            CROSS JOIN stages target
+            WHERE s.stage_id = ? 
+              AND s.team_id = ? 
+              AND target.race_id = ?
+              AND target.stage_id != s.stage_id;
+        """
+        c.execute(query, (source_stage_id, team_id, race_id))
+        inserted_count = c.rowcount
+        conn.commit()
+        
+        if inserted_count > 0:
+            print(f"\t\t [DB] Propagated {inserted_count} rows to future stages.")
+        else:
+            print(f"\t\t [DB] No rows propagated (already exist or no future stages).")
+            
+    except Exception as e:
+        print(f"Error propagating roster: {e}")
+    finally:
+        conn.close()
+
 def print_first_rows(data,n=30):
     for row in data[:n]:
         if isinstance(row, sqlite3.Row):

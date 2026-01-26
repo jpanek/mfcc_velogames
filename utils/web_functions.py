@@ -4,15 +4,29 @@ import requests
 from bs4 import BeautifulSoup, SoupStrainer
 import re
 from datetime import datetime, timedelta
+import random
 
 mfcc_league = 61627774
 
+USER_AGENTS = [
+    # Chrome on Windows
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/117.0.5938.132 Safari/537.36",
+    # Firefox on Windows
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:117.0) Gecko/20100101 Firefox/117.0",
+    # Chrome on Mac
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_5_2) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/117.0.5938.132 Safari/537.36",
+]
+
 HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-    'Accept-Language': 'en-US,en;q=0.5',
-    'Referer': 'https://www.velogames.com/',
-    'Connection': 'keep-alive',
+    "User-Agent": random.choice(USER_AGENTS),
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,"
+              "image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Referer": "https://www.velogames.com/",
+    "Connection": "keep-alive",
+    "Upgrade-Insecure-Requests": "1",
 }
 timeout_seconds = (3.05, 15)
 

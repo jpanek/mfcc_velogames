@@ -1,6 +1,6 @@
 # run_velo.py
 
-from db_functions import get_races_db, get_stages_db, get_teams_db, get_rosters_db, get_rider_stage_db
+from db_functions import get_races_db, get_stages_db, get_teams_db, get_rosters_db, get_rider_stage_db, propagate_roster_db
 from db_functions import insert_riders_db, insert_stages_db, insert_teams_db, insert_roster_db, insert_stage_points_db
 from web_functions import get_riders, get_stages, get_teams, get_roster, get_rider_stage
 from email_functions import send_email_stage_results
@@ -66,7 +66,7 @@ for race in races:
                     #send_email_stage_results(race, stage)
 
                 elif len(rosters):
-                    #CASE B) Rosters are already loaded, only need to refresh the results 
+                    #CASE B) Rosters are already loaded in DB, only need to refresh the results 
                     print(f"\t ** Rosters are already loaded => Only refreshing the results ...")
 
                     # SLEEP jitter
@@ -100,8 +100,12 @@ for race in races:
                         if roster is None:
                             print('\t\t No rosters are published yet')
                         else:
+                            #1) Save the scrapped roster to DB
                             insert_roster_db(race,stage,team,roster)
                             print('\t\t Rosters loaded ....')
+
+                            #2) Propagate the rosters to other stages (if eligbile)
+                            propagate_roster_db(race['race_id'],team['team_id'],stage['stage_id'])
 
                         del roster
                         gc.collect()
