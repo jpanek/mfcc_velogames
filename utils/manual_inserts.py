@@ -54,6 +54,10 @@ if 1:
         if 0:
             riders_data = get_riders(race['url'])
             insert_riders_db(race, riders_data)
+            
+            wait = random.uniform(30, 65)
+            print(f'\t\t Waiting for {round(wait,2)} seconds ...')
+            time_pkg.sleep(wait)
 
         if 0:
             #load all stages for a race
@@ -61,13 +65,22 @@ if 1:
             #print_first_rows(stages,12)
             insert_stages_db(race, stages)
 
+            wait = random.uniform(30, 65)
+            print(f'\t\t Waiting for {round(wait,2)} seconds ...')
+            time_pkg.sleep(wait)
+
         if 1:
             #load teams for a race
             teams = get_teams(race)
+
             #print_first_rows(teams)
             insert_teams_db(race,teams)
 
-        if 1:
+            wait = random.uniform(30, 65)
+            print(f'\t\t Waiting for {round(wait,2)} seconds ...')
+            time_pkg.sleep(wait)
+
+        if 0:
             stages,teams = [],[]
             #stages = get_stages_db(race,all_stages=True)
             stages = get_stages_db(race)
@@ -82,7 +95,7 @@ if 1:
                     else:
                         insert_roster_db(race,stage,team,roster)
                         print('\t\t Rosters loaded ....')
-                    wait = random.uniform(4, 8)
+                    wait = random.uniform(30, 65)
                     print(f'\t\t Waiting for {round(wait,2)} seconds ...')
                     time_pkg.sleep(wait)
             if not len(stages): print(f'\tNo stages to process for {race['name']} ...')

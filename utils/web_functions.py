@@ -109,6 +109,10 @@ def get_stages(race):
 
 def get_teams(race):
     url = get_team_url(race['url'])
+
+    current_headers = HEADERS.copy()
+    current_headers['Referer'] = race['url'] + "teamroster.php?tid=61967"
+
     response = requests.get(url, headers=HEADERS)
     response.raise_for_status()
     
