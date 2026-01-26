@@ -5,24 +5,26 @@
 
 {% block content %}
 
-<h3 class="mt-3">Upcoming races</h3>
-
+<!--Upcoming races table calendar -->
 <div class="row">
     <div class="col-12 col-lg-8 mx-auto">
         <div class="table-responsive">
             <table class="table table-bordered table-hover mt-2 w-auto mx-auto">
-                <thead class="table-primary text-center">
+                <caption style="caption-side: top; font-size: 1.4rem; margin-bottom: 10px;" class="text-center text-dark">
+                    Upcoming races
+                </caption>   
+                <thead class="table-primary text-center small">
                     <tr>
                         {% for column in columns[2:] %}
                             <th class="text-nowrap">{{ column }}</th>
                         {% endfor %}
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="small">
                     {% for row in data %}
                         <tr data-url="{{ url_for('main.stage') }}?stage_id={{ row['stage_id'] }}" 
                             onclick="redirectToLink(this)" 
-                            class="{% if row['warning'] == 1 %}table-warning{% endif %}" 
+                            class="{% if row['warning'] == 1 %}row-warning{% endif %}" 
                             style="cursor: pointer;">
                             {% for cell in row[2:] %}
                                 <td class="{% if cell is number %}numeric{% endif %} text-nowrap" 

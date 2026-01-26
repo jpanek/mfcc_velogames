@@ -40,8 +40,6 @@ race_set ={
     "end_date":"2026-01-31"
 }
 
-#https://www.velogames.com/tour-down-under/2026
-
 insert_race(race_set['name'],race_set['year'], race_set['url'], race_set['start_date'], race_set['end_date'])
 
 races = get_races_db(race_set['name'])

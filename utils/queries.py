@@ -95,7 +95,7 @@ join stages s
 left join v_stage_podium sp
     on sp.stage_id = s.stage_id
 where 0=0 
-and s.stage_date between date('now','-5 days') and date('now','+3 days')
+and s.stage_date between date('now','-3 days') and date('now','+3 days')
 and not (s.stage_number != 22 and r.race_id = 2)
 order by s.stage_date
 """
