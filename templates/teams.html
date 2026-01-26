@@ -31,29 +31,35 @@
     </div>
 </div>
 
-
-<div style="display: flex; justify-content: center; gap: 10px; width: 100%; padding: 10px;">
-    <!-- First Table (Columns 1 to 4) -->
-    <table class="table table-bordered table-hover mt-2" style="width: auto; table-layout: fixed;">
-        <thead class="table-primary">
-            <tr>
-                {% for column in columns[2:] %}
-                    <th>{{ column }}</th>
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in data %}
-                <tr data-url="{{ url_for('main.team') }}?team_id={{ row['team_id'] }}" onclick="redirectToLink(this)">
-                    {% for cell in row[2:] %}
-                        <td class="{% if cell is number %}numeric{% endif %}" style="padding: 6px; text-align: {% if cell is number %}right{% else %}left{% endif %};">
-                            {{ "{:,.0f}".format(cell) if cell is number else cell }}
-                        </td>
+<div class="row">
+    <div class="col-12 col-lg-8 mx-auto">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover mt-2 w-auto mx-auto">
+                <thead class="table-primary text-center small">
+                    <tr>
+                        {% for column in columns[2:] %}
+                            <th class="text-nowrap">{{ column }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody class="small">
+                    {% for row in data %}
+                        <tr data-url="{{ url_for('main.team') }}?team_id={{ row['team_id'] }}" 
+                            onclick="redirectToLink(this)" 
+                            class="{% if row['warning'] == 1 %}table-warning{% endif %}" 
+                            style="cursor: pointer;">
+                            {% for cell in row[2:] %}
+                                <td class="{% if cell is number %}numeric{% endif %} text-nowrap" 
+                                    style="padding: 8px 12px; text-align: {% if cell is number %}right{% else %}left{% endif %};">
+                                    {{ "{:,.0f}".format(cell) if cell is number else cell }}
+                                </td>
+                            {% endfor %}
+                        </tr>
                     {% endfor %}
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 <canvas id="chart"></canvas>

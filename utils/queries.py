@@ -14,7 +14,7 @@ and stage_date <= date('now')
 """ 
 
 sql_next_stages = """
-select stage_id, stage_name, stage_date from stages where race_id = (
+select race_id, stage_id, stage_name, stage_date from stages where race_id = (
 SELECT 
  s.race_id
 FROM stages s

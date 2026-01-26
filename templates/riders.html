@@ -48,30 +48,41 @@
     </div>
 
     <!-- Table -->
-    <div class="table-responsive">
-        <table class="table table-bordered table-hover mt-2 sortable-table" style="width: 100%; table-layout: fixed;">
-            <thead class="table-primary">
-                <tr>
-                    {% for column in columns[3:] %}
-                        <th onclick="sortTable(this, {{ loop.index0 }})" style="cursor: pointer; position: relative;">
-                            {{ column }} 
-                            <span class="sort-arrow" style="margin-left: 5px;">▲▼</span>
-                        </th>
-                    {% endfor %}
-                </tr>
-            </thead>
-            <tbody id="tableBody">
-                {% for row in data %}
-                    <tr data-url="{{ url_for('main.rider', race_id=row['race_id'], rider_code=row['rider_code']) }}" onclick="redirectToLink(this)">
-                        {% for cell in row[3:] %}
-                            <td class="{% if cell is number %}numeric{% endif %}" style="text-align: {% if cell is number %}right{% else %}left{% endif %};">
-                                {{ "{:,.0f}".format(cell) if cell is number else cell }}
-                            </td>
+    <div class="row">
+        <div class="col-12 col-lg-10 mx-auto">
+            <div class="mb-3">
+                <input type="text" id="searchInput" placeholder="Search by rider name..." class="form-control" style="max-width: 300px;">
+            </div>
+    
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover mt-2 mx-lg-auto w-auto sortable-table">
+                    <thead class="table-primary text-center small">
+                        <tr>
+                            {% for column in columns[3:] %}
+                                <th class="text-nowrap" onclick="sortTable(this, {{ loop.index0 }})" style="cursor: pointer;">
+                                    {{ column }} 
+                                    <span class="sort-arrow small" style="margin-left: 5px; opacity: 0.6;">▲▼</span>
+                                </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="small">
+                        {% for row in data %}
+                            <tr data-url="{{ url_for('main.rider', race_id=row['race_id'], rider_code=row['rider_code']) }}" 
+                                onclick="redirectToLink(this)" 
+                                style="cursor: pointer;">
+                                {% for cell in row[3:] %}
+                                    <td class="{% if cell is number %}numeric{% endif %} text-nowrap" 
+                                        style="padding: 8px 12px; text-align: {% if cell is number %}right{% else %}left{% endif %};">
+                                        {{ "{:,.0f}".format(cell) if cell is number else cell }}
+                                    </td>
+                                {% endfor %}
+                            </tr>
                         {% endfor %}
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 

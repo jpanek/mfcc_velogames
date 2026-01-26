@@ -98,8 +98,8 @@ def stage():
     _, stages = get_data_from_db(sql_next_stages,params)
     results = data[0]['results_ready']
 
+    race_id = stages[0]['race_id']
     # Find the current stage's position in the list of stages
-
     current_stage = next((stage for stage in stages if stage['stage_id'] == int(stage_id)), None)
     if current_stage:
         current_index = stages.index(current_stage)
@@ -204,7 +204,8 @@ def stage():
                            roster=roster,
                            prev_stage=prev_stage, 
                            next_stage=next_stage,
-                           ownership_list = ownership_list
+                           ownership_list = ownership_list,
+                           race_id = race_id
                            )
 
 @main_bp.route('/riders', methods=['GET'])
