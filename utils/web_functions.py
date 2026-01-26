@@ -44,10 +44,13 @@ def get_team_url(base_url):
     url = f"{base_url}leaguescores.php?league={mfcc_league}"
     return url
 
-def get_stages(race):
+def get_stages(race, session=None):
     # Send a GET request to fetch the HTML page
     league_url = race['url'] + "races.php"
-    response = requests.get(league_url, headers=HEADERS)
+
+    fetcher = session if session else requests
+
+    response = fetcher.get(league_url, headers=HEADERS)
     response.raise_for_status()
 
     # Parse the page with BeautifulSoup
@@ -107,13 +110,15 @@ def get_stages(race):
             })
     return stages
 
-def get_teams(race):
+def get_teams(race, session=None):
     url = get_team_url(race['url'])
 
     current_headers = HEADERS.copy()
     current_headers['Referer'] = race['url'] + "teamroster.php?tid=61967"
 
-    response = requests.get(url, headers=HEADERS)
+    fetcher = session if session else requests
+
+    response = fetcher.get(url, headers=current_headers)
     response.raise_for_status()
     
     # Parse the page with BeautifulSoup
@@ -278,10 +283,13 @@ def get_roster(race, stage, team, session=None):
 
     return roster
 
-def get_riders(url):
+def get_riders(url, session=None):
     url = url+"riders.php"
     #print(url)
-    response = requests.get(url,headers=HEADERS)
+
+    fetcher = session if session else requests
+
+    response = fetcher.get(url,headers=HEADERS)
     response.raise_for_status()
     soup = BeautifulSoup(response.text, 'html.parser')
 

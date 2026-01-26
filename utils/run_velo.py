@@ -20,29 +20,32 @@ print(f"------------------------------------------------------------------------
 
 #races = get_races_db(current_flag=True, race_name='Itzulia')
 races = get_races_db(current_flag=True)
+
 for race in races:
-    time_now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    print(f"Working on race: {race['name']} started at {time_now}")
-    
-    #load all riders
-    if reload_riders:
-        riders_data = get_riders(race['url'])
-        insert_riders_db(race, riders_data)
 
-    if reload_stages:
-        #load all stages for a race
-        stages = get_stages(race)
-        insert_stages_db(race, stages)
+    # 1 session for one race
+    with requests.Session() as session:
 
-    if reload_teams:
-        #load teams for a race
-        teams = get_teams(race)
-        insert_teams_db(race,teams)
+        time_now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        print(f"Working on race: {race['name']} started at {time_now}")
+        
+        #load all riders
+        if reload_riders:
+            riders_data = get_riders(race['url'],session=session)
+            insert_riders_db(race, riders_data)
 
-    if load_results:
+        if reload_stages:
+            #load all stages for a race
+            stages = get_stages(race, session=session)
+            insert_stages_db(race, stages)
 
-        # one session for all:
-        with requests.Session() as session:
+        if reload_teams:
+            #load teams for a race
+            teams = get_teams(race, session=session)
+            insert_teams_db(race,teams)
+
+        if load_results:
+
             stages,teams = [],[]
             
             stages = get_stages_db(race)
