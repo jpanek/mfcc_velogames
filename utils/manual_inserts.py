@@ -33,11 +33,11 @@ def insert_race(name, year, url, start_date, end_date):
 # Insert the races
 
 race_set ={
-    "name":"Tour Down Under",
+    "name":"Alula tour",
     "year":"2026",
-    "url":"https://www.velogames.com/tour-down-under/2026/",
-    "start_date":"2026-01-20",
-    "end_date":"2026-01-25"
+    "url":"https://www.velogames.com/alula-tour/2026/",
+    "start_date":"2026-01-27",
+    "end_date":"2026-01-31"
 }
 
 #https://www.velogames.com/tour-down-under/2026
