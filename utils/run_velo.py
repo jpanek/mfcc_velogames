@@ -54,7 +54,7 @@ for race in races:
             teams = get_teams_db(race)
             #load roasters and results:
             for i,stage in enumerate(stages):
-                print(f"\nWorking on Stage: {stage['stage_number']} - {stage['stage_name']}")
+                print(f"\tWorking on Stage: {stage['stage_number']} - {stage['stage_name']}")
 
                 rosters = get_rosters_db(race, stage) 
                 stage_points = get_rider_stage_db(race,stage)
@@ -62,14 +62,14 @@ for race in races:
                 if len(stage_points):
                     # ------------------------------------------------------------------------------
                     # CASE A) Results for the stage are in place, no need to refresh anything
-                    print(f"\t ** Results are already loaded => Skipping refresh ...")
+                    print(f"\t\t ** Results are already loaded => Skipping refresh ...")
                     #send_email_stage_results(race, stage)
                     # ------------------------------------------------------------------------------
 
                 elif len(rosters):
                     # ------------------------------------------------------------------------------
                     #CASE B) Rosters are already loaded in DB, only need to refresh the results 
-                    print(f"\t ** Rosters are already loaded => Only refreshing the results ...")
+                    print(f"\t\t ** Rosters are already loaded => Only refreshing the results ...")
 
                     # SLEEP jitter
                     wait = random.uniform(45, 130)
@@ -87,7 +87,7 @@ for race in races:
                 else:
                     # ------------------------------------------------------------------------------
                     #CASE C) Rosters are not known for a stage, load them first
-                    print(f"\t ** Rosters initial load started ...")
+                    print(f"\t\t ** Rosters initial load started ...")
                     for k,team in enumerate(teams):
                         
                         # SLEEP jitter
@@ -97,7 +97,7 @@ for race in races:
                         print(f'\t\t Waiting for {round(wait,2)} seconds ...')
                         time_pkg.sleep(wait)
 
-                        print(f"\tLoading teams: Team No.{k+1}: {race['name']} - {stage['stage_name']} - {team['team_name']}")
+                        print(f"\t\tLoading teams: Team No.{k+1}: {race['name']} - {stage['stage_name']} - {team['team_name']}")
                         
                         roster = get_roster(race,stage,team, session=session)
 
