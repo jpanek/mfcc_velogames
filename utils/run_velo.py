@@ -60,12 +60,14 @@ for race in races:
                 stage_points = get_rider_stage_db(race,stage)
 
                 if len(stage_points):
+                    # ------------------------------------------------------------------------------
                     # CASE A) Results for the stage are in place, no need to refresh anything
                     print(f"\t ** Results are already loaded => Skipping refresh ...")
-                    
                     #send_email_stage_results(race, stage)
+                    # ------------------------------------------------------------------------------
 
                 elif len(rosters):
+                    # ------------------------------------------------------------------------------
                     #CASE B) Rosters are already loaded in DB, only need to refresh the results 
                     print(f"\t ** Rosters are already loaded => Only refreshing the results ...")
 
@@ -80,8 +82,10 @@ for race in races:
                     if len(riders_data):
                         #here send email with information about results being loaded:
                         send_email_stage_results(race, stage)
+                    # ------------------------------------------------------------------------------
 
                 else:
+                    # ------------------------------------------------------------------------------
                     #CASE C) Rosters are not known for a stage, load them first
                     print(f"\t ** Rosters initial load started ...")
                     for k,team in enumerate(teams):
@@ -109,6 +113,7 @@ for race in races:
 
                         del roster
                         gc.collect()
+                    # ------------------------------------------------------------------------------
 
             if not len(stages): print(f'\tNo stages to process for {race['name']} ...')
 
