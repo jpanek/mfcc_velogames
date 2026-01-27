@@ -156,7 +156,7 @@ def get_teams_db(race):
     select * from teams 
     where 0=0
     and   race_id = ?
-    --and   team_id = 600 -- to delete
+    --and   team_id = 2415 -- to delete
     """
     c.execute(sql, (race_id,))
 
