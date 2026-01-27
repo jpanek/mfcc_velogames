@@ -26,3 +26,8 @@ testing/
 
 #sqlite database
 velogames.db
+
+# Database sync scripts
+pull_db.sh
+push_db.sh
+

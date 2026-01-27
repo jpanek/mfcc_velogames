@@ -76,6 +76,8 @@ if 1:
                 #load teams for a race
                 teams = get_teams(race, session=session)
 
+                print(teams)
+
                 #print_first_rows(teams)
                 insert_teams_db(race,teams)
 
