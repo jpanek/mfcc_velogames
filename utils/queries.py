@@ -237,6 +237,22 @@ sql_team = """
      order by t.stage_number
 """
 
+sql_races_podium_year="""
+select 
+ t.race_name, 
+ t.race_1 "1st",
+ t.race_2 "2nd",
+ t.race_3 "3rd" 
+from v_stage_podium t
+join races r
+    on t.race_id = r.race_id
+    and r.year = 2026
+where 0=0
+and   stage_number = 22
+--and   race_1 != '-'
+order by t.race_id desc 
+"""
+
 sql_teams_overall = """
 select 
  rank() over (order by sum(pts) desc) Position,

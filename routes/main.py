@@ -3,6 +3,7 @@ from utils.db_functions import get_data_from_db, get_pd_from_db, print_first_row
 from utils.queries import sql_stages_podium, sql_stages_chart, sql_stage_results, sql_stage_roster, sql_gc_results, sql_next_stages
 from utils.queries import sql_calendar, sql_stage, sql_riders_rank, sql_rider, sql_riders_rank_all, sql_races
 from utils.queries import sql_teams, sql_teams_chart, sql_team, sql_teams_overall, sql_teams_overall_year, sql_report
+from utils.queries import sql_races_podium_year
 from datetime import datetime
 import os
 import subprocess
@@ -15,7 +16,8 @@ main_bp = Blueprint('main',__name__)
 def index():
     columns, data = get_data_from_db(sql_calendar)
     columns_2, data_2 = get_data_from_db(sql_teams_overall_year)
-    columns_3, data_3 = get_data_from_db(sql_teams_overall)
+    #columns_3, data_3 = get_data_from_db(sql_teams_overall)
+    columns_3, data_3 = get_data_from_db(sql_races_podium_year)
 
     df = get_pd_from_db(sql_riders_rank_all)
 
