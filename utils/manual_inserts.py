@@ -34,11 +34,11 @@ def insert_race(name, year, url, start_date, end_date):
 # Insert the races
 
 race_set ={
-    "name":"Alula tour",
+    "name":"Besseges",
     "year":"2026",
-    "url":"https://www.velogames.com/alula-tour/2026/",
-    "start_date":"2026-01-27",
-    "end_date":"2026-01-31"
+    "url":"https://www.velogames.com/besseges/2026/",
+    "start_date":"2026-02-04",
+    "end_date":"2026-02-08"
 }
 
 insert_race(race_set['name'],race_set['year'], race_set['url'], race_set['start_date'], race_set['end_date'])
@@ -54,7 +54,7 @@ if 1:
         with requests.Session() as session:
 
             #load all riders
-            if 0:
+            if 1:
                 riders_data = get_riders(race['url'], session=session)
                 insert_riders_db(race, riders_data)
                 
@@ -62,7 +62,7 @@ if 1:
                 print(f'\t\t Waiting for {round(wait,2)} seconds ...')
                 time_pkg.sleep(wait)
 
-            if 0:
+            if 1:
                 #load all stages for a race
                 stages = get_stages(race, session=session)
                 #print_first_rows(stages,12)
@@ -75,8 +75,6 @@ if 1:
             if 1:
                 #load teams for a race
                 teams = get_teams(race, session=session)
-
-                print(teams)
 
                 #print_first_rows(teams)
                 insert_teams_db(race,teams)
