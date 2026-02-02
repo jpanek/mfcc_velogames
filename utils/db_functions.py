@@ -247,7 +247,7 @@ def insert_teams_db(race, teams):
             WHERE team_code = ? AND race_id = ?
         """, (team_name, team_manager, team_score, team_code, race_id))
 
-    print(f"\tProcessed {i+1} teams to DB")
+    print(f"\t\tProcessed {i+1} teams to DB")
     conn.commit()
     conn.close()
 
@@ -275,7 +275,7 @@ def insert_stages_db(race, stages):
             WHERE race_id = ? AND stage_number = ?
         ''', (stage_name, stage_date, race_id, stage_number))
 
-    print(f"Processed {i+1} stages to DB")
+    print(f"\t\tProcessed {i+1} stages to DB")
     conn.commit()
     conn.close()
 

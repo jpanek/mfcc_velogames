@@ -57,6 +57,7 @@ if 1:
             if 1:
                 riders_data = get_riders(race['url'], session=session)
                 insert_riders_db(race, riders_data)
+                print(f'\t\t Loaded {len(riders_data)} riders')
                 
                 wait = random.uniform(30, 65)
                 print(f'\t\t Waiting for {round(wait,2)} seconds ...')
@@ -67,6 +68,7 @@ if 1:
                 stages = get_stages(race, session=session)
                 #print_first_rows(stages,12)
                 insert_stages_db(race, stages)
+                #print(f'\t\t Loaded {len(stages)} stages')
 
                 wait = random.uniform(30, 65)
                 print(f'\t\t Waiting for {round(wait,2)} seconds ...')
