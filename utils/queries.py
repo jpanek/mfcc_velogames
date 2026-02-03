@@ -10,7 +10,7 @@ t.race_1  as "1st GC",
 t.race_2  as "2nd GC",
 t.race_3  as "3rd GC"
 FROM v_stage_podium t WHERE race_id = ?
-and stage_date <= date('now')
+--and stage_date <= date('now')
 """ 
 
 sql_next_stages = """

@@ -36,6 +36,7 @@ for race in races:
         if reload_riders:
             riders_data = get_riders(race['url'],session=session)
             insert_riders_db(race, riders_data)
+            print(f'\t\t Loaded {len(riders_data)} riders')
 
         if reload_stages:
             #load all stages for a race

@@ -34,9 +34,9 @@ def insert_race(name, year, url, start_date, end_date):
 # Insert the races
 
 race_set ={
-    "name":"Besseges",
+    "name":"Valencia",
     "year":"2026",
-    "url":"https://www.velogames.com/besseges/2026/",
+    "url":"https://www.velogames.com/valencia/2026/",
     "start_date":"2026-02-04",
     "end_date":"2026-02-08"
 }
