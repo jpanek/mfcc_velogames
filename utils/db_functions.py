@@ -183,6 +183,26 @@ def get_rosters_db(race,stage):
     conn.close()
     return rosters
 
+def get_roster_db(race, stage, team):
+    conn = sqlite3.connect(get_db_path())
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+    race_id = race['race_id']
+    stage_id = stage['stage_id']
+    team_id = team['team_id']
+
+    sql = """
+    select * from rosters 
+    where race_id = ?
+    and   stage_id = ?
+    and   team_id = ?
+    """
+    c.execute(sql, (race_id, stage_id, team_id,))
+
+    rosters = c.fetchall()
+    conn.close()
+    return rosters
+
 def get_rider_stage_db(race,stage):
     #conn = sqlite3.connect(db_path)
     conn = sqlite3.connect(get_db_path())

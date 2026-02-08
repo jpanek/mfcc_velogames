@@ -305,7 +305,9 @@ def get_riders(url, session=None):
 
     response = fetcher.get(url,headers=HEADERS)
     response.raise_for_status()
-    soup = BeautifulSoup(response.text, 'html.parser')
+
+    html = response.text.replace("</td></td>", "</td>")
+    soup = BeautifulSoup(html, "html.parser")
 
     # Locate the table
     table = soup.find('table', class_='tablesorter custom-popup')
@@ -337,7 +339,7 @@ def get_riders(url, session=None):
     # Extract data
     data = []
     for i,row in enumerate(table.find_all('tr')[1:]):  # Skip header row
-        cols = row.find_all('td')
+        cols = [td for td in row.find_all('td', recursive=False)]
         if len(cols) < max(column_map.values()) + 1:
             continue  # Skip incomplete rows
 
@@ -345,8 +347,11 @@ def get_riders(url, session=None):
         team = cols[column_map["team"]].get_text(strip=True)
         cost = cols[column_map["cost"]].get_text(strip=True)
         points = cols[column_map["points"]].get_text(strip=True)
-        rider_link = cols[0].find("a")["href"]
-        rider_code = rider_link.split("=")[-1]
+        
+        link_tag = cols[column_map["rider"]].find("a")
+        if not link_tag or not link_tag.has_attr("href"):
+            continue
+        rider_code = link_tag["href"].split("=")[-1]
 
         data.append({
             "rider": rider_name,
@@ -355,5 +360,62 @@ def get_riders(url, session=None):
             "points": points,
             "rider_code": rider_code
         })
+
+    return data
+
+# scripts/parser_helper.py
+
+def get_riders_2(url, session=None):
+    url = url + "riders.php"
+    fetcher = session if session else requests
+
+    response = fetcher.get(url, headers=HEADERS)
+    response.raise_for_status()
+
+    # The HTML has </td></td> which can confuse the tree structure
+    # We clean it, then use a more forgiving parser
+    html = response.text.replace("</td></td>", "</td>")
+    soup = BeautifulSoup(html, "lxml") # Using lxml if available, else "html.parser"
+
+    # Find all rows that contain at least one link to riderprofile
+    rows = soup.find_all("tr")
+    
+    data = []
+    for row in rows:
+        # Look for the rider link specifically to identify a valid data row
+        rider_link = row.find("a", href=lambda x: x and "riderprofile.php?rider=" in x)
+        
+        if not rider_link:
+            continue
+
+        # Get all cells in this row
+        cols = row.find_all("td")
+        
+        # Based on your HTML:
+        # cols[0] = Jersey image
+        # cols[1] = Rider Name <a>
+        # cols[2] = Team Name
+        # cols[3] = Cost
+        # cols[4] = Selected %
+        # cols[5] = Points
+        
+        try:
+            rider_name = rider_link.get_text(strip=True)
+            rider_code = rider_link["href"].split("=")[-1]
+            
+            # Use index-based grabbing now that we've confirmed it's a rider row
+            team = cols[2].get_text(strip=True)
+            cost = cols[3].get_text(strip=True)
+            points = cols[5].get_text(strip=True)
+
+            data.append({
+                "rider": rider_name,
+                "team": team,
+                "cost": cost,
+                "points": points,
+                "rider_code": rider_code
+            })
+        except IndexError:
+            continue # Skip if row doesn't match expected structure
 
     return data

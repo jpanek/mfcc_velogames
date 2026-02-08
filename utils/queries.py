@@ -278,6 +278,7 @@ select
  from v_stage_results_detail t 
 where 0=0
 and   t.year = 2026
+and   t.race_id != 96
 group by 
  --t.team_name,
  t.team_manager

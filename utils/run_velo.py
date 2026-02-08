@@ -1,6 +1,6 @@
 # run_velo.py
 
-from db_functions import get_races_db, get_stages_db, get_teams_db, get_rosters_db, get_rider_stage_db, propagate_roster_db
+from db_functions import get_races_db, get_stages_db, get_teams_db, get_rosters_db, get_rider_stage_db, propagate_roster_db, get_roster_db
 from db_functions import insert_riders_db, insert_stages_db, insert_teams_db, insert_roster_db, insert_stage_points_db
 from web_functions import get_riders, get_stages, get_teams, get_roster, get_rider_stage
 from email_functions import send_email_stage_results
@@ -53,7 +53,7 @@ for race in races:
             stages,teams = [],[]
             
             stages = get_stages_db(race)
-            #stages = get_stages_db(race, all_stages=False, stage_id=698)
+            #stages = get_stages_db(race, all_stages=False, stage_id=751)
             
             teams = get_teams_db(race)
             #load roasters and results:
@@ -63,34 +63,40 @@ for race in races:
                 rosters = get_rosters_db(race, stage) 
                 stage_points = get_rider_stage_db(race,stage)
 
+                #if 1:
                 if len(rosters)==0 or reload_rosters:
                     # ------------------------------------------------------------------------------
                     #CASE C) Rosters are not known for a stage, load them first
                     print(f"\t\t ** Rosters initial load started ...")
                     for k,team in enumerate(teams):
                         
-                        # SLEEP jitter
-                        wait = random.uniform(4, 6)
-                        if k % 4 == 0:
-                            wait += random.uniform(5,15)
-                        print(f'\t\t Waiting for {round(wait,2)} seconds ...')
-                        time_pkg.sleep(wait)
+                        roster_db = get_roster_db(race, stage, team)
+                        if len(roster_db)==0 or reload_rosters:
+                            # SLEEP jitter
+                            wait = random.uniform(4, 6)
+                            if k % 4 == 0:
+                                wait += random.uniform(5,15)
+                            print(f'\t\t Waiting for {round(wait,2)} seconds ...')
+                            time_pkg.sleep(wait)
 
-                        print(f"\t\tLoading teams: Team No.{k+1}: {race['name']} - {stage['stage_name']} - {team['team_name']}")
-                        
-                        roster = get_roster(race,stage,team, session=session)
+                            print(f"\t\tLoading teams: Team No.{k+1}: {race['name']} - {stage['stage_name']} - {team['team_name']}")
+                            
+                            roster = get_roster(race,stage,team, session=session)
 
-                        if roster is None:
-                            print('\t\t No rosters are published yet')
+                            if roster is None:
+                                print('\t\t No rosters are published yet')
+                            else:
+                                #1) Save the scrapped roster to DB
+                                insert_roster_db(race,stage,team,roster)
+                                print('\t\t Rosters loaded ....')
+
+                                #2) Propagate the rosters to other stages (if eligbile)
+                                propagate_roster_db(race['race_id'],team['team_id'],stage['stage_id'])
+
+                            del roster
                         else:
-                            #1) Save the scrapped roster to DB
-                            insert_roster_db(race,stage,team,roster)
-                            print('\t\t Rosters loaded ....')
+                            print('\t\t Rosters already in DWH ....')
 
-                            #2) Propagate the rosters to other stages (if eligbile)
-                            propagate_roster_db(race['race_id'],team['team_id'],stage['stage_id'])
-
-                        del roster
                         gc.collect()
                     # ------------------------------------------------------------------------------
                 elif len(stage_points)==0 or reload_results:

@@ -5,6 +5,7 @@ from datetime import datetime
 import time as time_pkg
 import random
 import requests
+import sys
 
 #BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #sys.path.append(BASE_DIR)
@@ -12,9 +13,10 @@ import requests
 #from config import db_path
 
 from db_functions import get_db_path
-from db_functions import get_races_db, get_teams_db, get_stages_db
+from db_functions import get_races_db, get_teams_db, get_stages_db, get_roster_db, propagate_roster_db
 from db_functions import insert_riders_db, insert_stages_db, insert_teams_db, insert_roster_db
 from web_functions import get_riders, get_stages, get_teams, get_roster
+from web_functions import get_riders_2
 
 
 def insert_race(name, year, url, start_date, end_date):
@@ -34,16 +36,20 @@ def insert_race(name, year, url, start_date, end_date):
 # Insert the races
 
 race_set ={
-    "name":"Valencia",
+    "name":"Oman",
     "year":"2026",
-    "url":"https://www.velogames.com/valencia/2026/",
-    "start_date":"2026-02-04",
-    "end_date":"2026-02-08"
+    "url":"https://www.velogames.com/oman/2026/",
+    "start_date":"2026-02-07",
+    "end_date":"2026-02-11"
 }
 
 insert_race(race_set['name'],race_set['year'], race_set['url'], race_set['start_date'], race_set['end_date'])
 
 races = get_races_db(race_set['name'])
+
+
+#races = get_races_db('Besseges')
+#races = get_races_db('Valencia')
 
 if 1:
 
@@ -54,23 +60,23 @@ if 1:
         with requests.Session() as session:
 
             #load all riders
-            if 1:
+            if 0:
                 riders_data = get_riders(race['url'], session=session)
                 insert_riders_db(race, riders_data)
                 print(f'\t\t Loaded {len(riders_data)} riders')
                 
-                wait = random.uniform(30, 65)
+                wait = random.uniform(20, 55)
                 print(f'\t\t Waiting for {round(wait,2)} seconds ...')
                 time_pkg.sleep(wait)
 
-            if 1:
+            if 0:
                 #load all stages for a race
                 stages = get_stages(race, session=session)
                 #print_first_rows(stages,12)
                 insert_stages_db(race, stages)
                 #print(f'\t\t Loaded {len(stages)} stages')
 
-                wait = random.uniform(30, 65)
+                wait = random.uniform(20, 55)
                 print(f'\t\t Waiting for {round(wait,2)} seconds ...')
                 time_pkg.sleep(wait)
 
@@ -81,7 +87,7 @@ if 1:
                 #print_first_rows(teams)
                 insert_teams_db(race,teams)
 
-                wait = random.uniform(30, 65)
+                wait = random.uniform(20, 55)
                 print(f'\t\t Waiting for {round(wait,2)} seconds ...')
                 time_pkg.sleep(wait)
 
@@ -94,15 +100,22 @@ if 1:
                 for i,stage in enumerate(stages):
                     for team in teams:
                         print(f"\tLoading: {race['name']} - {stage['stage_name']} - {team['team_name']}")
-                        roster = get_roster(race,stage,team, session=session)
-                        if roster is None:
-                            print('\t\t No rosters are published yet')
+
+                        roster_db = get_roster_db(race,stage,team)
+                        if len(roster_db)==0:
+                            roster = get_roster(race,stage,team, session=session)
+                            if roster is None:
+                                print('\t\t No rosters are published yet')
+                            else:
+                                insert_roster_db(race,stage,team,roster)
+                                print('\t\t Rosters loaded ....')
+                                propagate_roster_db(race['race_id'],team['team_id'],stage['stage_id'])
+                                wait = random.uniform(15, 40)
+                                print(f'\t\t Waiting for {round(wait,2)} seconds ...')
+                                time_pkg.sleep(wait)
                         else:
-                            insert_roster_db(race,stage,team,roster)
-                            print('\t\t Rosters loaded ....')
-                        wait = random.uniform(30, 65)
-                        print(f'\t\t Waiting for {round(wait,2)} seconds ...')
-                        time_pkg.sleep(wait)
+                            print('\t\t Rosters already in DWH ....')
+
                 if not len(stages): print(f'\tNo stages to process for {race['name']} ...')
 
     time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
