@@ -242,6 +242,7 @@ select
  t.rider,
  t.team,
  t.cost,
+ t.stage_number,
  t.stage_name,
  sum(t.total) as pts
 from v_stage_roster t
@@ -250,6 +251,7 @@ group by
  t.rider,
  t.team,
  t.cost,
+ t.stage_number,
  t.stage_name
 """
 

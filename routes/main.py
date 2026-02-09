@@ -391,7 +391,8 @@ def team():
     if detail_data:
         # Get unique riders (raw) and stages
         raw_riders = sorted(list(set(row['rider'] for row in detail_data)))
-        stages = sorted(list(set(row['stage_name'] for row in detail_data)))
+        stage_pairs = sorted(list(set((row['stage_number'], row['stage_name']) for row in detail_data)))
+        stages = [name for number, name in stage_pairs]
         
         # Map data: pivot[stage][rider] = pts
         pivot = defaultdict(dict)
@@ -399,7 +400,7 @@ def team():
             pivot[row['stage_name']][row['rider']] = row['pts']
 
         # Headers with shortened names
-        detail_headers = ['Stage'] + [shorten_name(r) for r in raw_riders] + ['Daily Total']
+        detail_headers = ['Stage'] + [shorten_name(r) for r in raw_riders] + ['Total']
         
         rider_totals = defaultdict(int)
         for stage in stages:
@@ -414,7 +415,7 @@ def team():
             detail_rows.append(row_list)
 
         # Summary Row
-        summary_row = ['TOTAL']
+        summary_row = ['Race total']
         grand_total = 0
         for rider in raw_riders:
             total_pts = rider_totals[rider]
