@@ -42,6 +42,7 @@ and stage_date <= date('now')
 sql_stage_results = """
         SELECT 
         t.results_ready,
+        t.team_id,
         t.race_name,
         t.stage_name,
         t.stage_date,
@@ -58,6 +59,7 @@ sql_stage_results = """
 sql_gc_results = """
         SELECT 
         t.results_ready,
+        t.team_id,
         t.race_name,
         t.stage_name,
         t.stage_date,

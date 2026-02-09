@@ -46,15 +46,15 @@
                     </caption>    
                     <thead class="table-primary small">
                         <tr>
-                            {% for column in columns[4:] %}
+                            {% for column in columns[5:] %}
                                 <th class="text-nowrap fw-normal">{{ column }}</th>
                             {% endfor %}
                         </tr>
                     </thead>
                     <tbody class="small">
                         {% for row in data %}
-                            <tr>
-                                {% for cell in row[4:] %}
+                            <tr onclick="window.location='{{ url_for('main.team', team_id=row[1]) }}';" style="cursor: pointer;">
+                                {% for cell in row[5:] %}
                                     <td class="{% if cell is number %}numeric{% endif %} text-nowrap" 
                                         style="text-align: {% if cell is number %}right{% else %}left{% endif %};">
                                         {{ "{:,.0f}".format(cell) if cell is number else cell }}
@@ -75,15 +75,15 @@
                     </caption>    
                     <thead class="table-primary small">
                         <tr>
-                            {% for column in columns_gc[4:] %}
+                            {% for column in columns_gc[5:] %}
                                 <th class="text-nowrap fw-normal">{{ column }}</th>
                             {% endfor %}
                         </tr>
                     </thead>
                     <tbody class="small">
                         {% for row in data_gc %}
-                            <tr>
-                                {% for cell in row[4:] %}
+                            <tr onclick="window.location='{{ url_for('main.team', team_id=row[1]) }}';" style="cursor: pointer;">
+                                {% for cell in row[5:] %}
                                     <td class="{% if cell is number %}numeric{% endif %} text-nowrap" 
                                         style="text-align: {% if cell is number %}right{% else %}left{% endif %};">
                                         {{ "{:,.0f}".format(cell) if cell is number else cell }}
