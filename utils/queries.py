@@ -237,6 +237,22 @@ sql_team = """
      order by t.stage_number
 """
 
+sql_team_detail = """
+select 
+ t.rider,
+ t.team,
+ t.cost,
+ t.stage_name,
+ sum(t.total) as pts
+from v_stage_roster t
+where t.team_id = ?
+group by
+ t.rider,
+ t.team,
+ t.cost,
+ t.stage_name
+"""
+
 sql_races_podium_year="""
 select 
  t.race_name, 
@@ -270,6 +286,7 @@ order by sum(pts) desc
 
 sql_teams_overall_year = """
 select 
+ t.team_code,
  rank() over (order by sum(pts) desc) Position,
  t.team_manager "Manager",
  sum(pts) as "Points",
@@ -296,6 +313,65 @@ SELECT
     END AS is_active
 FROM races 
 ORDER BY end_date DESC;
+"""
+
+sql_team_history="""
+WITH prep AS (
+    SELECT 
+        t.race_id,
+        t.race_name,
+        t.team_id,
+        t.team_code,
+        MAX(t.team_name) AS team_name,
+        max(t.team_manager) team_manager,
+        SUM(t.pts) AS pts,
+        CASE 
+            WHEN DATE('now') BETWEEN r.start_date AND r.end_date THEN 1 
+            ELSE 0 
+        END AS current_race
+    FROM v_stage_points t
+    JOIN races r ON r.race_id = t.race_id
+    WHERE r.year = '2026'
+    and   r.race_id != 96
+    GROUP BY t.race_id, t.race_name, t.team_code
+)
+, fin as (
+SELECT 
+    *,
+    -- 1. Rank of team within each race
+    RANK() OVER (
+        PARTITION BY race_id 
+        ORDER BY pts DESC
+    ) AS race_rank,
+    -- 2. Gap to the best team in the race
+    (MAX(pts) OVER (PARTITION BY race_id) - pts) AS gap_to_leader,
+    DENSE_RANK() OVER (
+            ORDER BY race_id ASC
+        ) AS season_race_number,
+    SUM(pts) OVER (
+            PARTITION BY team_code 
+            ORDER BY race_id 
+            ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+        ) AS cumulative_pts
+FROM prep
+ORDER BY race_id DESC, race_rank ASC
+    )
+select 
+ t.race_id,
+ t.team_id,
+ t.team_code,
+ t.current_race,
+ t.team_name "Team",
+ t.team_manager "Manager",
+ t.season_race_number "No",
+ t.race_name "Race",
+ t.pts "Score",
+ t.race_rank "GC result",
+ t.gap_to_leader "GC gap",
+ t.cumulative_pts as "Season points"
+from fin t
+where t.team_code = ?
+order by race_id 
 """
 
 sql_report = """

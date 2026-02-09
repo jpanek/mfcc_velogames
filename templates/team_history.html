@@ -1,0 +1,96 @@
+<!-- templates/team_history.html -->
+{% extends 'base.html' %}
+
+{% block title %}MFCC Velogames{% endblock %}
+
+{% block content %}
+<script>
+    function redirectToLink(row) {
+        window.location.href = row.getAttribute("data-url");
+    }
+</script>
+
+<!-- Titles and headers -->
+<div class="container mt-4 mb-4">
+    <div class="text-center">
+        <h1 class="display-6 fw-semibold mb-1">{{ team_name }}</h1>
+        
+        <p class="text-muted text-uppercase mb-0" style="letter-spacing: 1px; font-size: 0.9rem;">
+            Manager: <span class="text-dark fw-semibold">{{ team_manager }}</span> 
+            <span class="mx-2">|</span> 
+            {{ now.year }} Season Results
+        </p>
+    </div>
+</div>
+
+<hr class="my-4 opacity-25">
+    
+<!-- Table with data -->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12 col-lg-10 mx-auto">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover mt-2 w-auto mx-auto sortable-table">
+                    <thead class="table-primary">
+                        <tr class="small text-center">
+                            {% for column in columns[6:] %}
+                                <th onclick="sortTable(this, {{ loop.index0 }})" 
+                                    style="cursor: pointer; white-space: nowrap;" 
+                                    class="fw-normal">
+                                    {{ column }} 
+                                    <span class="sort-arrow" style="margin-left: 5px; font-size: 0.8em;">▲▼</span>
+                                </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody class="small">
+                        {% for row in data %}
+                            <tr class="{% if row[3] == 1 %}row-warning{% endif %}" 
+                                data-url="{{ url_for('main.team') }}?team_id={{ row[1] }}" 
+                                onclick="redirectToLink(this)" 
+                                style="cursor: pointer;">
+                                {% for cell in row[6:] %}
+                                    <td class="{% if cell is number %}numeric{% endif %} text-nowrap" 
+                                        style="text-align: {% if cell is number %}right{% else %}left{% endif %}; padding: 8px 12px;">
+                                        {{ "{:,.0f}".format(cell) if cell is number else cell }}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function sortTable(header, columnIndex) {
+    let table = header.closest("table");
+    let tbody = table.querySelector("tbody");
+    let rows = Array.from(tbody.querySelectorAll("tr"));
+    let ascending = header.dataset.order !== "asc";
+    
+    rows.sort((rowA, rowB) => {
+        let cellA = rowA.children[columnIndex].innerText.trim();
+        let cellB = rowB.children[columnIndex].innerText.trim();
+        
+        let a = isNaN(cellA) ? cellA.toLowerCase() : parseFloat(cellA.replace(/,/g, ''));
+        let b = isNaN(cellB) ? cellB.toLowerCase() : parseFloat(cellB.replace(/,/g, ''));
+        
+        return ascending ? (a > b ? 1 : -1) : (a < b ? 1 : -1);
+    });
+
+    tbody.append(...rows);
+    header.dataset.order = ascending ? "asc" : "desc";
+
+    // Reset all sort arrows
+    document.querySelectorAll(".sort-arrow").forEach(el => el.innerHTML = "▲▼");
+
+    // Update the clicked column's sort arrow
+    let arrow = header.querySelector(".sort-arrow");
+    arrow.innerHTML = ascending ? "▲" : "▼";
+}
+</script>
+
+{% endblock %}

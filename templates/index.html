@@ -51,15 +51,18 @@
                     </caption>    
                     <thead class="table-primary small">
                         <tr>
-                            {% for column in columns_2 %}
+                            {% for column in columns_2[1:] %}
                                 <th class="text-nowrap fw-normal">{{ column }}</th>
                             {% endfor %}
                         </tr>
                     </thead>
                     <tbody class="small">
                         {% for row in data_2 %}
-                            <tr>
-                                {% for cell in row %}
+                            {# We use row[0] for the link, but row[1:] for the display #}
+                            <tr onclick="window.location='/team-history?team_code={{ row[0] }}';" 
+                                style="cursor: pointer;" 
+                                class="table-hover-custom">
+                                {% for cell in row[1:] %}
                                     <td class="{% if cell is number %}numeric{% endif %} text-nowrap" 
                                         style="text-align: {% if cell is number %}right{% else %}left{% endif %};">
                                         {{ "{:,.0f}".format(cell) if cell is number else cell }}

@@ -1,12 +1,13 @@
 from flask import Blueprint, render_template, request, json, current_app, redirect, url_for, flash
 from utils.db_functions import get_data_from_db, get_pd_from_db, print_first_rows
 from utils.queries import sql_stages_podium, sql_stages_chart, sql_stage_results, sql_stage_roster, sql_gc_results, sql_next_stages
-from utils.queries import sql_calendar, sql_stage, sql_riders_rank, sql_rider, sql_riders_rank_all, sql_races
-from utils.queries import sql_teams, sql_teams_chart, sql_team, sql_teams_overall, sql_teams_overall_year, sql_report
+from utils.queries import sql_calendar, sql_stage, sql_riders_rank, sql_rider, sql_riders_rank_all, sql_races, sql_team_detail
+from utils.queries import sql_teams, sql_teams_chart, sql_team, sql_team_history, sql_teams_overall_year, sql_report
 from utils.queries import sql_races_podium_year
 from datetime import datetime
 import os
 import subprocess
+from collections import defaultdict
 
 main_bp = Blueprint('main',__name__)
 
@@ -339,25 +340,104 @@ def teams():
                            datasets=datasets
                            )
 
+@main_bp.route('/team-history', methods=['GET'])
+def team_history():
+    #race_id = request.args.get('race_id')
+    team_code = request.args.get('team_code')
+    print(team_code)
+    params = (team_code,)
+
+    columns, data = get_data_from_db(sql_team_history,params)
+
+    team_manager = data[0]['Manager']
+    team_name = data[0]['Team']
+    
+
+    return render_template('team_history.html',
+                    team_manager = team_manager,
+                    team_name=team_name,
+                    columns=columns,
+                    data=data,
+                    now=datetime.now()
+                    )
+
 @main_bp.route('/team', methods=['GET'])
 def team():
-    #race_id = request.args.get('race_id')
     team_id = request.args.get('team_id')
-    print(team_id)
+    if not team_id:
+        return "Team ID is required", 400
+        
     params = (team_id,)
 
-    columns, data = get_data_from_db(sql_team,params)
+    # 1. Fetch main team results
+    columns, data = get_data_from_db(sql_team, params)
 
+    # 2. Fetch detail data for the pivot table
+    detail_cols, detail_data = get_data_from_db(sql_team_detail, params)
+
+    # Helper to shorten name: "Tadej POGAČAR" -> "T. POGAČAR"
+    def shorten_name(full_name):
+        if not full_name: return ""
+        parts = str(full_name).split()
+        if len(parts) > 1:
+            #return f"{parts[0][0]}. {' '.join(parts[1:])}"
+            return ' '.join(parts[1:])
+            
+        return full_name
+
+    # Pivot Logic
+    detail_headers, detail_rows, summary_row = [], [], []
     
-    race_name = data[0]['race_name']
-    team_name = data[0]['team_name']
-    title = f"{race_name} results of {team_name}"
-    
+    if detail_data:
+        # Get unique riders (raw) and stages
+        raw_riders = sorted(list(set(row['rider'] for row in detail_data)))
+        stages = sorted(list(set(row['stage_name'] for row in detail_data)))
+        
+        # Map data: pivot[stage][rider] = pts
+        pivot = defaultdict(dict)
+        for row in detail_data:
+            pivot[row['stage_name']][row['rider']] = row['pts']
+
+        # Headers with shortened names
+        detail_headers = ['Stage'] + [shorten_name(r) for r in raw_riders] + ['Daily Total']
+        
+        rider_totals = defaultdict(int)
+        for stage in stages:
+            row_list = [stage]
+            daily_sum = 0
+            for rider in raw_riders:
+                pts = pivot[stage].get(rider, 0)
+                row_list.append(pts)
+                daily_sum += pts
+                rider_totals[rider] += pts
+            row_list.append(daily_sum)
+            detail_rows.append(row_list)
+
+        # Summary Row
+        summary_row = ['TOTAL']
+        grand_total = 0
+        for rider in raw_riders:
+            total_pts = rider_totals[rider]
+            summary_row.append(total_pts)
+            grand_total += total_pts
+        summary_row.append(grand_total)
+
+    # Safety check for the title variables to avoid IndexError
+    if data and len(data) > 0:
+        # Accessing sqlite3.Row by key
+        race_name = data[0]['race_name']
+        team_name = data[0]['team_name']
+        title = f"{race_name} - {team_name}"
+    else:
+        title = "Team data not found"
 
     return render_template('team.html',
                     title=title,
                     columns=columns,
-                    data=data
+                    data=data,
+                    detail_headers=detail_headers,
+                    detail_rows=detail_rows,
+                    summary_row=summary_row
                     )
 
 @main_bp.route('/report', methods=['GET'])

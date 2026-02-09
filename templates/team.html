@@ -11,33 +11,89 @@
 </script>
 
 <!-- <div class="container mt-5"> -->
-<h3 class="mb-1">{{ title }}</h3>
+
+    <div class="container-fluid mt-4">
+        <div class="text-center mb-4">
+            <h3 class="fw-bold">{{ title }}</h3>
+        </div>
     
-<div style="display: flex; justify-content: center; gap: 10px; width: 100%; padding: 10px;">
-    <table class="table table-bordered table-hover mt-2 sortable-table" style="width: auto; table-layout: fixed;">
-        <thead class="table-primary">
-            <tr>
-                {% for column in columns[3:] %}
-                    <th onclick="sortTable(this, {{ loop.index0 }})" style="cursor: pointer; position: relative;">
-                        {{ column }} 
-                        <span class="sort-arrow" style="margin-left: 5px;">▲▼</span>
-                    </th>
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in data %}
-                <tr>
-                    {% for cell in row[3:] %}
-                        <td class="{% if cell is number %}numeric{% endif %}" style="text-align: {% if cell is number %}right{% else %}left{% endif %};">
-                            {{ "{:,.0f}".format(cell) if cell is number else cell }}
-                        </td>
-                    {% endfor %}
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+        <div class="row mb-5">
+            <div class="col-12 col-lg-10 mx-auto">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover w-auto mx-auto sortable-table">
+                        <thead class="table-primary">
+                            <tr class="small text-center">
+                                {% for column in columns[3:] %}
+                                    <th onclick="sortTable(this, {{ loop.index0 }})" 
+                                        style="cursor: pointer; white-space: nowrap;" 
+                                        class="fw-normal">
+                                        {{ column }} 
+                                        <span class="sort-arrow" style="margin-left: 5px; font-size: 0.8em;">▲▼</span>
+                                    </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody class="small">
+                            {% for row in data %}
+                                <tr>
+                                    {% for cell in row[3:] %}
+                                        <td class="{% if cell is number %}numeric{% endif %} text-nowrap" 
+                                            style="text-align: {% if cell is number %}right{% else %}left{% endif %}; padding: 8px 12px;">
+                                            {{ "{:,.0f}".format(cell) if cell is number else cell }}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    
+        <hr class="my-5 opacity-25">
+    
+        <div class="row">
+            <div class="col-12 col-lg-10 mx-auto">
+                <div class="text-center mb-3">
+                    <h4 class="fw-semibold">Rider Points by Stage</h4>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover mt-2 w-auto mx-auto">
+                        <thead class="table-primary"> 
+                            <tr class="small text-center">
+                                {% for col in detail_headers %}
+                                    <th style="white-space: nowrap;" class="fw-normal">
+                                        {{ col }}
+                                    </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody class="small">
+                            {% for row in detail_rows %}
+                                <tr>
+                                    {% for cell in row %}
+                                        <td class="{% if cell is number %}numeric{% endif %} text-nowrap" 
+                                            style="text-align: {% if loop.index0 == 0 %}left{% else %}right{% endif %}; padding: 8px 12px;">
+                                            {{ "{:,.0f}".format(cell) if cell is number else cell }}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot class="table-secondary fw-bold small">
+                            <tr>
+                                {% for cell in summary_row %}
+                                    <td style="text-align: {% if loop.index0 == 0 %}left{% else %}right{% endif %}; padding: 8px 12px;">
+                                        {{ "{:,.0f}".format(cell) if cell is number else cell }}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 
 <script>
 function sortTable(header, columnIndex) {
