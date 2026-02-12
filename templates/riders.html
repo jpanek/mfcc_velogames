@@ -37,21 +37,27 @@
         <canvas id="scatterChart" style="width: 100%; height: 500px;"></canvas>
       </div>
     </div>
-  </div>
+</div>
+
+
   
 
 <!-- Search for rider by name box: -->
 <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; padding: 10px;">
-    <!-- Search Row (Above Table) -->
-    <div style="width: 100%; margin-bottom: 10px;">
-        <input type="text" id="searchInput" placeholder="Search by rider name..." class="form-control" style="width: 300px; margin-left: 0;">
-    </div>
 
     <!-- Table -->
     <div class="row">
+        
         <div class="col-12 col-lg-10 mx-auto">
-            <div class="mb-3">
-                <input type="text" id="searchInput" placeholder="Search by rider name..." class="form-control" style="max-width: 300px;">
+            <div class="d-flex justify-content-between align-items-end mb-3">
+                <div class="flex-grow-1" style="max-width: 300px;">
+                    <label for="searchInput" class="form-label small fw-bold">Search Riders</label>
+                    <input type="text" id="searchInput" placeholder="Search by rider name..." class="form-control">
+                </div>
+                
+                <button id="copyRidersBtn" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-clipboard"></i> Copy Rider/Cost List
+                </button>
             </div>
     
             <div class="table-responsive">
@@ -178,4 +184,49 @@
         }
     });
 </script>
+
+
+<script>
+document.getElementById('copyRidersBtn').addEventListener('click', function() {
+    const table = document.querySelector(".sortable-table");
+    const headers = Array.from(table.querySelectorAll("th")).map(th => th.innerText.trim());
+    
+    // Find column indices for "Rider" and "Cost"
+    const riderIdx = headers.findIndex(h => h.includes("Rider"));
+    const costIdx = headers.findIndex(h => h.includes("Cost"));
+
+    if (riderIdx === -1 || costIdx === -1) {
+        alert("Could not find Rider or Cost columns.");
+        return;
+    }
+
+    const rows = Array.from(document.querySelectorAll("#tableBody tr"));
+    let copyText = "Rider_name, Cost\n";
+
+    rows.forEach(row => {
+        // Only copy rows that are currently visible (important for filtered results)
+        if (row.style.display !== "none") {
+            const cells = row.querySelectorAll("td");
+            const name = cells[riderIdx].innerText.trim();
+            const cost = cells[costIdx].innerText.trim();
+            copyText += `${name}, ${cost}\n`;
+        }
+    });
+
+    // Copy to clipboard
+    navigator.clipboard.writeText(copyText).then(() => {
+        const originalText = this.innerHTML;
+        this.innerHTML = "✅ Copied!";
+        this.classList.replace('btn-outline-primary', 'btn-success');
+        
+        setTimeout(() => {
+            this.innerHTML = originalText;
+            this.classList.replace('btn-success', 'btn-outline-primary');
+        }, 2000);
+    }).catch(err => {
+        console.error('Failed to copy: ', err);
+    });
+});
+</script>
+
 {% endblock %}

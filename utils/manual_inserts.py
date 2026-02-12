@@ -36,11 +36,11 @@ def insert_race(name, year, url, start_date, end_date):
 # Insert the races
 
 race_set ={
-    "name":"Oman",
+    "name":"Murcia",
     "year":"2026",
-    "url":"https://www.velogames.com/oman/2026/",
-    "start_date":"2026-02-07",
-    "end_date":"2026-02-11"
+    "url":"https://www.velogames.com/murcia/2026/",
+    "start_date":"2026-02-13",
+    "end_date":"2026-02-14"
 }
 
 insert_race(race_set['name'],race_set['year'], race_set['url'], race_set['start_date'], race_set['end_date'])
@@ -48,8 +48,8 @@ insert_race(race_set['name'],race_set['year'], race_set['url'], race_set['start_
 races = get_races_db(race_set['name'])
 
 
-#races = get_races_db('Besseges')
-#races = get_races_db('Valencia')
+races = get_races_db('Murcia')
+#races = get_races_db('Provence')
 
 if 1:
 
@@ -60,7 +60,7 @@ if 1:
         with requests.Session() as session:
 
             #load all riders
-            if 0:
+            if 1:
                 riders_data = get_riders(race['url'], session=session)
                 insert_riders_db(race, riders_data)
                 print(f'\t\t Loaded {len(riders_data)} riders')
