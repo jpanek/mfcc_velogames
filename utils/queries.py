@@ -115,6 +115,35 @@ and   s.stage_id = ?
 """
 
 sql_riders_rank="""
+with prep as (
+select 
+ t.race_id, 
+ t.rider_code,
+ sum(t.points) points 
+from stage_points t
+group by 
+ t.race_id,
+ t.rider_code
+      )
+select 
+ rc.race_id, 
+ rc.name as race_name,
+ r.rider_code,
+ r.name "Rider",
+ r.team,
+ r.cost "Cost",
+ p.points "Points",
+ p.points/r.cost "Points/Cost"
+from riders r
+join races rc
+ on rc.race_id = r.race_id
+left join prep p
+ on p.race_id = rc.race_id
+ and p.rider_code = r.rider_code
+where rc.race_id = ?
+"""
+
+sql_riders_rank_old="""
 SELECT 
   t.race_id,
   t.race_name,

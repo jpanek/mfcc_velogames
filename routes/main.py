@@ -216,8 +216,10 @@ def riders():
     race_id = request.args.get('race_id')
     params = (race_id,)
     columns, data = get_data_from_db(sql_riders_rank,params)
+    
 
     if not data:
+        pass
         return render_template('error.html', message="Data not available for this race.")
 
     race = data[0]['race_name']
