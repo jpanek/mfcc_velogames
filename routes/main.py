@@ -215,11 +215,9 @@ def stage():
 def riders():
     race_id = request.args.get('race_id')
     params = (race_id,)
-    columns, data = get_data_from_db(sql_riders_rank,params)
-    
+    columns, data = get_data_from_db(sql_riders_rank, params)
 
     if not data:
-        pass
         return render_template('error.html', message="Data not available for this race.")
 
     race = data[0]['race_name']
@@ -227,15 +225,26 @@ def riders():
 
     df = get_pd_from_db(sql_riders_rank, params)
 
-    # Build data for Chart.js
-    chart_data = []
+    # Build categorized data for Chart.js
+    picked_riders = []
+    unpicked_riders = []
+
     for _, row in df.iterrows():
-        chart_data.append({
+        point = {
             "x": row["Cost"],
             "y": row["Points"],
             "label": row["Rider"]
-        })
-    chart_data=json.dumps(chart_data)
+        }
+        # Check the 'Picks' column
+        if row.get("Picks", 0) > 0:
+            picked_riders.append(point)
+        else:
+            unpicked_riders.append(point)
+
+    chart_data = json.dumps({
+        "picked": picked_riders,
+        "unpicked": unpicked_riders
+    })
 
     return render_template('riders.html',
                            title=title,

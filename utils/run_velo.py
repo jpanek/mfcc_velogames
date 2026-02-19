@@ -21,7 +21,7 @@ reload_rosters = False
 
 print(f"--------------------------------------------------------------------------")
 
-#races = get_races_db(current_flag=True, race_name='Itzulia')
+#races = get_races_db(race_name='Alula tour')
 races = get_races_db(current_flag=True)
 
 for race in races:
@@ -53,7 +53,8 @@ for race in races:
             stages,teams = [],[]
             
             stages = get_stages_db(race)
-            #stages = get_stages_db(race, all_stages=False, stage_id=751)
+            #stages = get_stages_db(race, all_stages=False, stage_id=716)
+            #stages = get_stages_db(race, all_stages=True)
             
             teams = get_teams_db(race)
             #load roasters and results:
@@ -114,6 +115,7 @@ for race in races:
 
                     if len(riders_data):
                         #here send email with information about results being loaded:
+                        #pass
                         send_email_stage_results(race, stage)
                     # ------------------------------------------------------------------------------
                 else:                   

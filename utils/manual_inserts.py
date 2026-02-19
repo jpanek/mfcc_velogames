@@ -36,11 +36,11 @@ def insert_race(name, year, url, start_date, end_date):
 # Insert the races
 
 race_set ={
-    "name":"Murcia",
+    "name":"Algarve",
     "year":"2026",
-    "url":"https://www.velogames.com/murcia/2026/",
-    "start_date":"2026-02-13",
-    "end_date":"2026-02-14"
+    "url":"https://www.velogames.com/algarve/2026/",
+    "start_date":"2026-02-18",
+    "end_date":"2026-02-22"
 }
 
 insert_race(race_set['name'],race_set['year'], race_set['url'], race_set['start_date'], race_set['end_date'])
@@ -48,8 +48,8 @@ insert_race(race_set['name'],race_set['year'], race_set['url'], race_set['start_
 races = get_races_db(race_set['name'])
 
 
-races = get_races_db('Murcia')
-#races = get_races_db('Provence')
+#races = get_races_db('Murcia')
+races = get_races_db('Andalucia')
 
 if 1:
 
@@ -65,18 +65,18 @@ if 1:
                 insert_riders_db(race, riders_data)
                 print(f'\t\t Loaded {len(riders_data)} riders')
                 
-                wait = random.uniform(20, 55)
+                wait = random.uniform(10, 20)
                 print(f'\t\t Waiting for {round(wait,2)} seconds ...')
                 time_pkg.sleep(wait)
 
-            if 0:
+            if 1:
                 #load all stages for a race
                 stages = get_stages(race, session=session)
                 #print_first_rows(stages,12)
                 insert_stages_db(race, stages)
                 #print(f'\t\t Loaded {len(stages)} stages')
 
-                wait = random.uniform(20, 55)
+                wait = random.uniform(5, 20)
                 print(f'\t\t Waiting for {round(wait,2)} seconds ...')
                 time_pkg.sleep(wait)
 
@@ -87,7 +87,7 @@ if 1:
                 #print_first_rows(teams)
                 insert_teams_db(race,teams)
 
-                wait = random.uniform(20, 55)
+                wait = random.uniform(5, 20)
                 print(f'\t\t Waiting for {round(wait,2)} seconds ...')
                 time_pkg.sleep(wait)
 

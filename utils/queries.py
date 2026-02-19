@@ -125,22 +125,37 @@ group by
  t.race_id,
  t.rider_code
       )
+, selections as (
+select 
+ t.race_id,
+ t.rider_code,
+ count(distinct t.team_id) as selections 
+from v_stage_roster t
+group by 
+ t.race_id,
+ t.rider_code
+        )      
 select 
  rc.race_id, 
  rc.name as race_name,
  r.rider_code,
  r.name "Rider",
  r.team,
+ ifnull(s.selections,0) "Picks",
  r.cost "Cost",
- p.points "Points",
- p.points/r.cost "Points/Cost"
+ ifnull(p.points,0) "Points",
+ ifnull(p.points/r.cost,0) "Points/Cost"
 from riders r
 join races rc
  on rc.race_id = r.race_id
 left join prep p
  on p.race_id = rc.race_id
  and p.rider_code = r.rider_code
+left join selections s
+ on s.race_id = r.race_id
+ and s.rider_code = r.rider_code
 where rc.race_id = ?
+order by r.cost desc 
 """
 
 sql_riders_rank_old="""

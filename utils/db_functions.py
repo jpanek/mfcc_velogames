@@ -91,6 +91,7 @@ def get_races_db(race_name=None, current_flag=False):
 
         if current_flag:
             sql += " AND date('now') BETWEEN date(start_date, '-2 days') AND date(end_date, '+2 days')"
+            #sql += " and race_id > 95"
 
         c.execute(sql, params)
         return c.fetchall()
@@ -134,7 +135,7 @@ def get_stages_db(race,all_stages=False, stage_id=None):
         --and   race_id = 91
         --and stage_number = 3
         and   date(stage_date) >= date('now','-1 day') and date(stage_date) <= date('now')
-        and   date(stage_date) = date('now','-0 day')
+        --and   date(stage_date) = date('now','-0 day')
         --and   0=1
         """
         params = (race_id,)

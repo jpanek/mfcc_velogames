@@ -1,4 +1,4 @@
-<!-- templates/race.html -->
+<!-- templates/riders.html -->
 {% extends 'base.html' %}
 
 {% block title %}MFCC Velogames{% endblock %}
@@ -93,38 +93,51 @@
 
 <!-- Scatter plot for Riders --> 
 <script>
-    const chartData = {{ chart_data|safe }};
+    const rawData = {{ chart_data|safe }};
 
     const ctx = document.getElementById('scatterChart').getContext('2d');
     new Chart(ctx, {
         type: 'scatter',
         data: {
-            datasets: [{
-                label: 'Cost vs Points',
-                data: chartData,
-                backgroundColor: 'rgba(255, 99, 132, 0.6)',
-                pointRadius: 7,
-                pointHoeverRadius: 10,
-                borderColor: 'rgba(255, 99, 132, 1)'
-            }]
+            datasets: [
+                {
+                    label: 'Picked Riders',
+                    data: rawData.picked,
+                    backgroundColor: 'rgba(40, 167, 69, 0.7)', // Green
+                    pointRadius: 7,
+                    pointHoverRadius: 10,
+                    borderColor: 'rgb(40, 167, 69)'
+                },
+                {
+                    label: 'Unpicked Riders',
+                    data: rawData.unpicked,
+                    backgroundColor: 'rgba(220, 53, 69, 0.5)', // Red
+                    pointRadius: 6,
+                    pointHoverRadius: 9,
+                    borderColor: 'rgb(220, 53, 69)'
+                }
+            ]
         },
         options: {
+            responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
                             const point = context.raw;
-                            return `${point.label}: (${point.x}, ${point.y})`;
+                            return `${point.label}: Cost ${point.x}, Pts ${point.y}`;
                         }
                     }
                 }
             },
             scales: {
                 x: {
-                    title: { display: true, text: 'Cost' }
+                    title: { display: true, text: 'Cost (Credits)' },
+                    ticks: { stepSize: 1 }
                 },
                 y: {
-                    title: { display: true, text: 'Points' }
+                    title: { display: true, text: 'Points Scored' }
                 }
             }
         }
