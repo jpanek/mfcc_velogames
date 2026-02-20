@@ -49,7 +49,7 @@ races = get_races_db(race_set['name'])
 
 
 #races = get_races_db('Murcia')
-races = get_races_db('Andalucia')
+races = get_races_db('Algarve')
 
 if 1:
 
@@ -60,7 +60,7 @@ if 1:
         with requests.Session() as session:
 
             #load all riders
-            if 1:
+            if 0:
                 riders_data = get_riders(race['url'], session=session)
                 insert_riders_db(race, riders_data)
                 print(f'\t\t Loaded {len(riders_data)} riders')
@@ -69,7 +69,7 @@ if 1:
                 print(f'\t\t Waiting for {round(wait,2)} seconds ...')
                 time_pkg.sleep(wait)
 
-            if 1:
+            if 0:
                 #load all stages for a race
                 stages = get_stages(race, session=session)
                 #print_first_rows(stages,12)
@@ -91,7 +91,7 @@ if 1:
                 print(f'\t\t Waiting for {round(wait,2)} seconds ...')
                 time_pkg.sleep(wait)
 
-            if 0:
+            if 1:
                 stages,teams = [],[]
                 #stages = get_stages_db(race,all_stages=True)
                 stages = get_stages_db(race)

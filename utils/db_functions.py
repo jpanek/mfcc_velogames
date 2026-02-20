@@ -135,7 +135,7 @@ def get_stages_db(race,all_stages=False, stage_id=None):
         --and   race_id = 91
         --and stage_number = 3
         and   date(stage_date) >= date('now','-1 day') and date(stage_date) <= date('now')
-        --and   date(stage_date) = date('now','-0 day')
+        and   date(stage_date) = date('now','-0 day')
         --and   0=1
         """
         params = (race_id,)
