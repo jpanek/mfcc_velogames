@@ -351,7 +351,7 @@ and   t.race_id != 96
 group by 
  --t.team_name,
  t.team_manager
-order by sum(pts) desc
+order by sum(pts) desc, sum(case when stage_rank = 1 then 1 else 0 end) desc
 """
 
 sql_navbar = """
