@@ -194,6 +194,10 @@ SELECT
   sum(t.total*1.)/count(distinct t.team_manager)/min(t.cost) as "Points/Cost",
   sum(t.total*1.)/count(distinct t.team_manager)/count(distinct t.stage_id) as "Points/Start"
 FROM v_stage_roster t
+join races r
+    on r.race_id = t.race_id
+    and r.year = 2026
+    and r.race_id != 96
 where 0=0
 and   stage_date <= date('now')
 --and   race_id = ?
