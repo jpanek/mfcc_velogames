@@ -74,7 +74,7 @@ def create_tables():
     conn.commit()
     conn.close()
 
-def get_races_db(race_name=None, current_flag=False):
+def get_races_db(race_name=None, current_year=False, current_flag=False):
     """Fetch races from the database. Optionally filter by race name and/or current date."""
     try:
         #conn = sqlite3.connect(db_path)
@@ -88,6 +88,8 @@ def get_races_db(race_name=None, current_flag=False):
         if race_name:
             sql += " AND name = ?"
             params += (race_name,)
+        if current_year:
+            sql += " AND year = 2026"
 
         if current_flag:
             sql += " AND date('now') BETWEEN date(start_date, '-2 days') AND date(end_date, '+2 days')"

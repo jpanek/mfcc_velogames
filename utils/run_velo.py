@@ -8,7 +8,7 @@ from datetime import datetime
 import time as time_pkg
 import random
 import requests
-import gc
+import gc, sys
 
 #create_tables() 
 reload_riders = False #Only run when new race is added
@@ -49,7 +49,7 @@ for race in races:
             insert_teams_db(race,teams)
 
         if load_results:
-
+            
             stages,teams = [],[]
             
             stages = get_stages_db(race)
@@ -92,7 +92,8 @@ for race in races:
                                 print('\t\t Rosters loaded ....')
 
                                 #2) Propagate the rosters to other stages (if eligbile)
-                                propagate_roster_db(race['race_id'],team['team_id'],stage['stage_id'])
+                                if race['name'] != 'Sixies-superclasico'
+                                    propagate_roster_db(race['race_id'],team['team_id'],stage['stage_id'])
 
                             del roster
                         else:
