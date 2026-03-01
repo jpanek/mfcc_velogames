@@ -49,7 +49,7 @@ for race in races:
             insert_teams_db(race,teams)
 
         if load_results:
-            
+
             stages,teams = [],[]
             
             stages = get_stages_db(race)
@@ -92,7 +92,7 @@ for race in races:
                                 print('\t\t Rosters loaded ....')
 
                                 #2) Propagate the rosters to other stages (if eligbile)
-                                if race['name'] != 'Sixies-superclasico'
+                                if race['name'] != 'Sixies-superclasico':
                                     propagate_roster_db(race['race_id'],team['team_id'],stage['stage_id'])
 
                             del roster
