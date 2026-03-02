@@ -190,6 +190,9 @@ def stage():
     # Format it as '24 Mar'
     #formatted_date = date_obj.strftime('%d %b')
 
+    print(columns)
+    print(data)
+
     return render_template('stage.html',
                            columns=columns, 
                            data=data, 

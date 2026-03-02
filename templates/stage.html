@@ -39,6 +39,7 @@
     <div class="row justify-content-center g-4">
         
         <div class="col-12 col-xl-auto">
+
             <div class="table-responsive">
                 <table class="table table-bordered table-hover w-auto mx-auto">
                     <caption style="caption-side: top; font-size: 1.2rem; font-weight: bold; margin-bottom: 10px;" class="text-center text-dark">
@@ -46,28 +47,41 @@
                     </caption>    
                     <thead class="table-primary small">
                         <tr>
-                            {% for column in columns[5:] %}
-                                <th class="text-nowrap fw-normal">{{ column }}</th>
-                            {% endfor %}
+                            <th class="text-nowrap fw-normal">No.</th>
+                            <th class="text-nowrap fw-normal">Manager</th>
+                            <th class="text-nowrap fw-normal d-none d-md-table-cell">Team</th>
+                            <th class="text-nowrap fw-normal">Stage points</th>
                         </tr>
                     </thead>
                     <tbody class="small">
                         {% for row in data %}
-                            <tr onclick="window.location='{{ url_for('main.team', team_id=row[1]) }}';" style="cursor: pointer;">
-                                {% for cell in row[5:] %}
-                                    <td class="{% if cell is number %}numeric{% endif %} text-nowrap" 
-                                        style="text-align: {% if cell is number %}right{% else %}left{% endif %};">
-                                        {{ "{:,.0f}".format(cell) if cell is number else cell }}
-                                    </td>
-                                {% endfor %}
+                            <tr onclick="window.location='{{ url_for('main.team', team_id=row['team_id']) }}';" style="cursor: pointer;">
+                                <td class="numeric text-nowrap" style="text-align: right;">
+                                    {{ row['No.'] }}
+                                </td>
+                                
+                                <td class="text-start">
+                                    <div>{{ row['Manager'] }}</div>
+                                    <div class="small text-muted d-md-none">{{ row['Team'] }}</div>
+                                </td>
+            
+                                <td class="text-start d-none d-md-table-cell">
+                                    {{ row['Team'] }}
+                                </td>
+            
+                                <td class="numeric text-nowrap" style="text-align: right;">
+                                    {{ "{:,.0f}".format(row['Stage points']) if row['Stage points'] is number else row['Stage points'] }}
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
+
         </div>
     
         <div class="col-12 col-xl-auto">
+
             <div class="table-responsive">
                 <table class="table table-bordered table-hover w-auto mx-auto">
                     <caption style="caption-side: top; font-size: 1.2rem; font-weight: bold; margin-bottom: 10px;" class="text-center text-dark">
@@ -75,26 +89,37 @@
                     </caption>    
                     <thead class="table-primary small">
                         <tr>
-                            {% for column in columns_gc[5:] %}
-                                <th class="text-nowrap fw-normal">{{ column }}</th>
-                            {% endfor %}
+                            <th class="text-nowrap fw-normal">Rank</th>
+                            <th class="text-nowrap fw-normal">Manager</th>
+                            <th class="text-nowrap fw-normal d-none d-md-table-cell">Team</th>
+                            <th class="text-nowrap fw-normal">Total points</th>
                         </tr>
                     </thead>
                     <tbody class="small">
                         {% for row in data_gc %}
-                            <tr onclick="window.location='{{ url_for('main.team', team_id=row[1]) }}';" style="cursor: pointer;">
-                                {% for cell in row[5:] %}
-                                    <td class="{% if cell is number %}numeric{% endif %} text-nowrap" 
-                                        style="text-align: {% if cell is number %}right{% else %}left{% endif %};">
-                                        {{ "{:,.0f}".format(cell) if cell is number else cell }}
-                                    </td>
-                                {% endfor %}
+                            <tr onclick="window.location='{{ url_for('main.team', team_id=row['team_id']) }}';" style="cursor: pointer;">
+                                <td class="numeric text-nowrap" style="text-align: right;">
+                                    {{ row['No.'] }}
+                                </td>
+                                
+                                <td class="text-start">
+                                    <div>{{ row['Manager'] }}</div>
+                                    <div class="small text-muted d-md-none">{{ row['Team'] }}</div>
+                                </td>
+            
+                                <td class="text-start d-none d-md-table-cell">
+                                    {{ row['Team'] }}
+                                </td>
+            
+                                <td class="numeric text-nowrap" style="text-align: right;">
+                                    {{ "{:,.0f}".format(row['Total points']) if row['Total points'] is number else row['Total points'] }}
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-        </div>
+
     </div>    
 
     <!--Tables with roster data -->
