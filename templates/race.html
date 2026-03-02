@@ -41,22 +41,24 @@
                 <thead class="table-primary small text-center">
                     <tr>
                         <th class="fw-normal">Stage / Date</th>
-                        <th class="text-nowrap fw-normal">{{ columns[3] }}</th>
-                        <th class="text-nowrap fw-normal">{{ columns[4] }}</th>
-                        <th class="text-nowrap fw-normal">{{ columns[5] }}</th>
+                        <th class="text-wrap fw-normal">{{ columns[3] }}</th>
+                        <th class="text-wrap fw-normal">{{ columns[4] }}</th>
+                        <th class="text-wrap fw-normal">{{ columns[5] }}</th>
                     </tr>
                 </thead>
                 <tbody class="small">
                     {% for row in data %}
                         <tr style="cursor: pointer;" data-url="{{ url_for('main.stage') }}?stage_id={{ row['stage_id'] }}" onclick="redirectToLink(this)">
                             
-                            <td style="min-width: 120px; max-width: 200px;">
-                                <div class="text-nowrap">{{ row[1] }}</div> <div class="text-muted small" style="white-space: normal; line-height: 1.2;">
-                                    {{ row[2] }} </div>
+                            <td style="width: 160px; max-width: 160px;">
+                                <div class="text-wrap" style="line-height: 1.2;">{{ row[1] }}</div>
+                                <div class="text-muted text-truncate" style="font-size: 0.75rem; line-height: 1.2;" title="{{ row[2] }}">
+                                    {{ row[2] }}
+                                </div>
                             </td>
-                            <td class="text-nowrap text-center">{{ row[3] }}</td>
-                            <td class="text-nowrap text-center">{{ row[4] }}</td>
-                            <td class="text-nowrap text-center">{{ row[5] }}</td>
+                            <td class="text-wrap text-center">{{ row[3] }}</td>
+                            <td class="text-wrap text-center">{{ row[4] }}</td>
+                            <td class="text-wrap text-center">{{ row[5] }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -71,7 +73,7 @@
                     <tr>
                         <th class="fw-normal">Date / Stage</th>
                         {% for column in columns[6:] %}
-                            <th class="text-nowrap fw-normal">{{ column }}</th>
+                            <th class="text-wrap fw-normal">{{ column }}</th>
                         {% endfor %}
                     </tr>
                 </thead>
@@ -79,15 +81,15 @@
                     {% for row in data %}
                         <tr style="cursor: pointer;" data-url="{{ url_for('main.stage') }}?stage_id={{ row['stage_id'] }}" onclick="redirectToLink(this)">
                             
-                            <td style="max-width: 160px;">
-                                <div class="text-nowrap">{{ row[1] }}</div>
-                                <div class="text-muted text-truncate" style="font-size: 0.75rem;" title="{{ row[2] }}">
+                            <td style="width: 160px; max-width: 160px;">
+                                <div class="text-wrap" style="line-height: 1.2;">{{ row[1] }}</div>
+                                <div class="text-muted text-truncate" style="font-size: 0.75rem; line-height: 1.2;" title="{{ row[2] }}">
                                     {{ row[2] }}
                                 </div>
                             </td>
                             
                             {% for cell in row[6:] %}
-                                <td class="text-nowrap text-center">
+                                <td class="text-wrap text-center">
                                     {{ "{:,.0f}".format(cell) if cell is number else cell }}
                                 </td>
                             {% endfor %}

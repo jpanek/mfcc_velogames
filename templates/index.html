@@ -9,14 +9,17 @@
 <div class="row">
     <div class="col-12 col-lg-8 mx-auto">
         <div class="table-responsive">
+
             <table class="table table-bordered table-hover mt-2 w-auto mx-auto">
                 <caption style="caption-side: top; font-size: 1.4rem; margin-bottom: 10px;" class="text-center text-dark">
                     Upcoming races
                 </caption>   
                 <thead class="table-primary text-center small">
                     <tr>
-                        {% for column in columns[2:] %}
-                            <th class="text-nowrap">{{ column }}</th>
+                        <th class="fw-normal">Date</th>
+                        <th class="fw-normal">Race</th>
+                        {% for column in columns[5:] %}
+                            <th class="text-wrap fw-normal">{{ column }}</th>
                         {% endfor %}
                     </tr>
                 </thead>
@@ -26,8 +29,18 @@
                             onclick="redirectToLink(this)" 
                             class="{% if row['warning'] == 1 %}row-warning{% endif %}" 
                             style="cursor: pointer;">
-                            {% for cell in row[2:] %}
-                                <td class="{% if cell is number %}numeric{% endif %} text-nowrap" 
+
+                            <td>
+                                <div class="" style="font-size: 0.85rem;">{{ row[4] }}</div> 
+                            </td>
+                            
+                            <td class="text-start">
+                                <div class="fw-bold">{{ row[3] }}</div> 
+                                <div class="text-muted" style="font-size: 0.75rem; font-style: italic;">{{ row[2] }}</div> 
+                            </td>
+            
+                            {% for cell in row[5:] %}
+                                <td class="{% if cell is number %}numeric{% endif %} text-nowrap text-center" 
                                     style="text-align: {% if cell is number %}right{% else %}left{% endif %};">
                                     {{ "{:,.0f}".format(cell) if cell is number else cell }}
                                 </td>
@@ -36,6 +49,7 @@
                     {% endfor %}
                 </tbody>
             </table>
+
         </div>
     </div>
 </div>
@@ -45,24 +59,31 @@
         
         <div class="col-12 col-xl-auto">
             <div class="table-responsive">
+
                 <table class="table table-bordered table-hover w-auto mx-auto">
                     <caption style="caption-side: top; font-size: 1.2rem; margin-bottom: 10px;" class="text-center text-dark">
                         This season teams
                     </caption>    
-                    <thead class="table-primary small">
+                    <thead class="table-primary text-center small">
                         <tr>
-                            {% for column in columns_2[1:] %}
+                            <th class="fw-normal">Manager (No.)</th>
+                            {% for column in columns_2[3:] %}
                                 <th class="text-nowrap fw-normal">{{ column }}</th>
                             {% endfor %}
                         </tr>
                     </thead>
                     <tbody class="small">
                         {% for row in data_2 %}
-                            {# We use row[0] for the link, but row[1:] for the display #}
                             <tr onclick="window.location='/team-history?team_code={{ row[0] }}';" 
                                 style="cursor: pointer;" 
                                 class="table-hover-custom">
-                                {% for cell in row[1:] %}
+                                
+                                <td class="text-nowrap text-start">
+                                    <span>{{ row[2] }}</span>
+                                    <span class="text-muted ms-1" style="font-size: 0.75rem;">({{ row[1] }})</span>
+                                </td>
+                
+                                {% for cell in row[3:] %}
                                     <td class="{% if cell is number %}numeric{% endif %} text-nowrap" 
                                         style="text-align: {% if cell is number %}right{% else %}left{% endif %};">
                                         {{ "{:,.0f}".format(cell) if cell is number else cell }}
@@ -72,6 +93,7 @@
                         {% endfor %}
                     </tbody>
                 </table>
+
             </div>
         </div>
     
@@ -81,10 +103,10 @@
                     <caption style="caption-side: top; font-size: 1.2rem; margin-bottom: 10px;" class="text-center text-dark">
                         This season races
                     </caption>    
-                    <thead class="table-primary small">
+                    <thead class="table-primary text-center small">
                         <tr>
                             {% for column in columns_3 %}
-                                <th class="text-nowrap fw-normal">{{ column }}</th>
+                                <th class="text-wrap fw-normal">{{ column }}</th>
                             {% endfor %}
                         </tr>
                     </thead>
@@ -92,7 +114,7 @@
                         {% for row in data_3 %}
                             <tr>
                                 {% for cell in row %}
-                                    <td class="{% if cell is number %}numeric{% endif %} text-nowrap" 
+                                    <td class="{% if cell is number %}numeric{% endif %} text-wrap" 
                                         style="text-align: {% if cell is number %}right{% else %}left{% endif %};">
                                         {{ "{:,.0f}".format(cell) if cell is number else cell }}
                                     </td>

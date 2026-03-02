@@ -307,7 +307,7 @@ group by
 
 sql_races_podium_year="""
 select 
- t.race_name, 
+ t.race_name "Race", 
  t.race_1 "1st",
  t.race_2 "2nd",
  t.race_3 "3rd" 
@@ -343,7 +343,7 @@ select
  t.team_manager "Manager",
  sum(pts) as "Points",
 -- sum(stage_gap) as "Gap",
- sum(case when stage_rank = 1 then 1 else 0 end) as "Wins count"
+ sum(case when stage_rank = 1 then 1 else 0 end) as "Wins"
  from v_stage_results_detail t 
 where 0=0
 and   t.year = 2026
