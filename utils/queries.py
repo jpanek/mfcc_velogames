@@ -87,7 +87,16 @@ SELECT
  case when s.stage_date between date('now') and datetime('now','+3 days') then 1 else 0 end as warning,
  r.name as 'Race',
  s.stage_name as 'Stage',
- date(s.stage_date) as 'Date',
+ --date(s.stage_date) as 'Date',
+ -- Grab the day (last 2 chars)
+    substr(date(s.stage_date), 9, 2) || ' ' || 
+    -- Map the month (chars 6 and 7)
+    CASE substr(date(s.stage_date), 6, 2)
+        WHEN '01' THEN 'Jan' WHEN '02' THEN 'Feb' WHEN '03' THEN 'Mar'
+        WHEN '04' THEN 'Apr' WHEN '05' THEN 'May' WHEN '06' THEN 'Jun'
+        WHEN '07' THEN 'Jul' WHEN '08' THEN 'Aug' WHEN '09' THEN 'Sep'
+        WHEN '10' THEN 'Oct' WHEN '11' THEN 'Nov' WHEN '12' THEN 'Dec'
+    END as 'Date',
  --time(s.stage_date) as 'Cut-Off time',
  ifnull(sp.stage_1,'') as 'Stage',
  ifnull(sp.race_1,'') as 'GC'
