@@ -186,13 +186,6 @@ def stage():
         message = "Data not available yet"
         return render_template('stage_not_ready.html',title=title, message=message)
 
-    date_obj = datetime.strptime(stage_date, '%Y-%m-%d')
-    # Format it as '24 Mar'
-    #formatted_date = date_obj.strftime('%d %b')
-
-    print(columns)
-    print(data)
-
     return render_template('stage.html',
                            columns=columns, 
                            data=data, 
