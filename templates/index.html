@@ -40,7 +40,7 @@
                             </td>
             
                             {% for cell in row[5:] %}
-                                <td class="{% if cell is number %}numeric{% endif %} text-nowrap text-center" 
+                                <td class="{% if cell is number %}numeric{% endif %} text-wrap text-center" 
                                     style="text-align: {% if cell is number %}right{% else %}left{% endif %};">
                                     {{ "{:,.0f}".format(cell) if cell is number else cell }}
                                 </td>
