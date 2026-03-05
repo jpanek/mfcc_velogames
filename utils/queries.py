@@ -346,21 +346,27 @@ order by sum(pts) desc
 """
 
 sql_teams_overall_year = """
-select 
- t.team_code,
- rank() over (order by sum(pts) desc) Position,
- t.team_manager "Manager",
- sum(pts) as "Points",
--- sum(stage_gap) as "Gap",
- sum(case when stage_rank = 1 then 1 else 0 end) as "Wins"
- from v_stage_results_detail t 
-where 0=0
-and   t.year = 2026
-and   t.race_id != 96
-group by 
- --t.team_name,
- t.team_manager
-order by sum(pts) desc, sum(case when stage_rank = 1 then 1 else 0 end) desc
+SELECT 
+    team_code,
+    RANK() OVER (ORDER BY SUM(pts) DESC) AS "Position",
+    team_manager AS "Manager",
+    SUM(pts) AS "Points",
+    SUM(is_gc_winner) as "GC wins",
+    SUM(CASE WHEN stage_rank = 1 and stage_name != 'End of Tour' THEN 1 ELSE 0 END) AS "Stage Wins"
+    
+FROM (
+    SELECT 
+        *,
+        -- Mark as 1 if they are the leader at the "End of Tour"
+        CASE WHEN stage_name = 'End of Tour' 
+             AND RANK() OVER (PARTITION BY race_id, stage_name ORDER BY cumulative_pts DESC) = 1 
+             THEN 1 ELSE 0 END as is_gc_winner
+    FROM v_stage_results_detail
+    WHERE year = 2026
+) t
+WHERE race_id != 96
+GROUP BY team_code, team_manager
+ORDER BY Points DESC, "GC Wins" DESC, "Stasge Wins" Desc
 """
 
 sql_navbar = """
