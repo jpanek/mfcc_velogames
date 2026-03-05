@@ -255,6 +255,8 @@ def rider():
     rider_code = request.args.get('rider_code')
     params = (race_id, rider_code,)
 
+    print(params)
+
     columns, data = get_data_from_db(sql_rider,params)
 
     print(data)

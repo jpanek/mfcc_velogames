@@ -216,30 +216,34 @@ order by min(t.cost*1.) desc
 """
 
 sql_rider="""
-with prep as (
-    SELECT 
-     rank() over (partition by t.stage_id, t.race_id order by random()) rank,
-     case when sum(ifnull(t.total,0)) over (partition by t.race_id, t.stage_number) = 0 then 0 else 1 end as results_ready,
-     t.*
-    FROM v_stage_roster t
-    where 0=0
-    and   race_id = ?
-    and   t.rider_code = ?
-        )
 SELECT 
- race_id,
- rider_code,
- rider,
- stage_name as "Stage name",
- date(stage_date) "Date",
- team as "Team",
- cost as "Cost",
- total  as "Points",
- total*1/cost  as "Points/Cost"
-FROM prep  
-where rank = 1
-and results_ready = 1
-
+    r.race_id,
+    ri.rider_code,
+    ri.name as rider,
+    s.stage_name as "Stage name",
+    date(s.stage_date) as "Date",
+    ri.team as "Team",
+    ri.cost as "Cost",
+    count(t.rider_code) as "Picks",
+    ifnull(max(t.total), 0) as "Points",
+    case 
+        when ifnull(ri.cost, 0) > 0 then (ifnull(max(t.total), 0) * 1.0 / ri.cost) 
+        else 0 
+    end as "Points/Cost"
+FROM races r
+JOIN riders ri ON r.race_id = ri.race_id
+JOIN stages s ON r.race_id = s.race_id
+LEFT JOIN v_stage_roster t 
+    ON s.stage_id = t.stage_id 
+    AND ri.rider_code = t.rider_code
+WHERE r.race_id = ?
+  AND ri.rider_code = ?
+  AND s.stage_date <= date('now')
+GROUP BY 
+    r.race_id, 
+    ri.rider_code, 
+    s.stage_id
+ORDER BY s.stage_date ASC
 """
 
 sql_teams="""
