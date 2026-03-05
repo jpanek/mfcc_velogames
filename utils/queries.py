@@ -225,14 +225,19 @@ SELECT
     ri.team as "Team",
     ri.cost as "Cost",
     count(t.rider_code) as "Picks",
-    ifnull(max(t.total), 0) as "Points",
+    ifnull(sp.points, 0) as "Points",
     case 
-        when ifnull(ri.cost, 0) > 0 then (ifnull(max(t.total), 0) * 1.0 / ri.cost) 
+        when ifnull(ri.cost, 0) > 0 then (ifnull(sp.points, 0) * 1.0 / ri.cost) 
         else 0 
     end as "Points/Cost"
 FROM races r
 JOIN riders ri ON r.race_id = ri.race_id
 JOIN stages s ON r.race_id = s.race_id
+LEFT JOIN stage_points sp
+    ON sp.race_id = r.race_id
+    AND sp.stage_id = s.stage_id
+    AND sp.rider_code = ri.rider_code
+-- Join roster to count how many managers picked him
 LEFT JOIN v_stage_roster t 
     ON s.stage_id = t.stage_id 
     AND ri.rider_code = t.rider_code
