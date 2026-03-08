@@ -34,13 +34,20 @@ def insert_race(name, year, url, start_date, end_date):
     conn.close()
 
 # Insert the races
+race_set ={
+    "name":"Tirreno",
+    "year":"2026",
+    "url":"https://www.velogames.com/tirreno-adriatico//2026/",
+    "start_date":"2026-03-09",
+    "end_date":"2026-03-15"
+}
 
 race_set ={
-    "name":"Sixies-superclasico",
+    "name":"Paris-Nice",
     "year":"2026",
-    "url":"https://www.velogames.com/sixes-classics/2026/",
-    "start_date":"2026-02-28",
-    "end_date":"2026-10-18"
+    "url":"https://www.velogames.com/pn/2026/",
+    "start_date":"2026-03-08",
+    "end_date":"2026-03-15"
 }
 
 insert_race(race_set['name'],race_set['year'], race_set['url'], race_set['start_date'], race_set['end_date'])
