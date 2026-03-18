@@ -21,8 +21,8 @@ reload_rosters = False
 
 print(f"--------------------------------------------------------------------------")
 
-races = get_races_db(race_name='Tirreno')
-#races = get_races_db(current_flag=True)
+#races = get_races_db(race_name='Tirreno')
+races = get_races_db(current_flag=True)
 
 for race in races:
 
