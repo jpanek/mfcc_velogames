@@ -333,6 +333,7 @@ from v_stage_podium t
 join races r
     on t.race_id = r.race_id
     and r.year = 2026
+    and r.race_id != 139
 where 0=0
 and   stage_number = 22
 --and   race_1 != '-'
