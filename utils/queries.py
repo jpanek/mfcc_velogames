@@ -325,7 +325,7 @@ group by
 
 sql_races_podium_year="""
 select 
- t.race_id = 13t.race_name "Race", 
+ t.race_name "Race", 
  t.race_1 "1st",
  t.race_2 "2nd",
  t.race_3 "3rd" 
