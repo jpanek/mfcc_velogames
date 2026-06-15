@@ -325,7 +325,7 @@ group by
 
 sql_races_podium_year="""
 select 
- t.race_name "Race", 
+ t.race_id = 13t.race_name "Race", 
  t.race_1 "1st",
  t.race_2 "2nd",
  t.race_3 "3rd" 
@@ -333,11 +333,13 @@ from v_stage_podium t
 join races r
     on t.race_id = r.race_id
     and r.year = 2026
-    and r.race_id != 139
 where 0=0
-and   stage_number = 22
---and   race_1 != '-'
-order by t.race_id desc 
+and (
+    (t.race_id = 139 AND stage_number = 43 AND DATE('now') >= '2025-10-18') 
+    OR 
+    (t.race_id != 139 AND stage_number = 22 )
+)
+order by r.end_date desc
 """
 
 sql_teams_overall = """
