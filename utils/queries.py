@@ -335,7 +335,7 @@ join races r
     and r.year = 2026
 where 0=0
 and (
-    (t.race_id = 139 AND stage_number = 43 AND DATE('now') >= '2025-10-18') 
+    (t.race_id = 139 AND stage_number = 43 AND DATE('now') >= '2026-10-18') 
     OR 
     (t.race_id != 139 AND stage_number = 22 )
 )
