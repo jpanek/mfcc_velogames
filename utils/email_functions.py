@@ -48,7 +48,7 @@ def send_email(recipient, subject, body):
     except Exception as e:
         print(f"\t** [EMAIL] Failed to send email: {e}")
 
-def email_stage_body(race_name, stage_name, columns, data, columns_gc, data_gc):
+def email_stage_body(race_name, stage_name, stage_id, columns, data, columns_gc, data_gc):
     def build_table(cols, rows):
         header = "".join([f"<th style='border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f8f9fa;'>{col}</th>" for col in cols[4:]])
         
@@ -83,7 +83,7 @@ def email_stage_body(race_name, stage_name, columns, data, columns_gc, data_gc):
             {gc_table}
             
             <div style="margin-top: 20px; text-align: center;">
-                <a href="https://cyclingdatahub.com" style="background-color: #2980b9; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">View Full Standings</a>
+                <a href="https://cyclingdatahub.com/stage?stage_id={stage_id}" style="background-color: #2980b9; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">View Full Standings</a>
             </div>
 
             <p style="font-size: 0.85em; color: #7f8c8d; border-top: 1px solid #eee; margin-top: 25px; padding-top: 15px;">
@@ -109,6 +109,7 @@ def send_email_stage_results(race, stage):
     email_body = email_stage_body(
         race_name=race_name,
         stage_name=stage_name,
+        stage_id=stage_id,
         columns=columns,
         data = data,
         columns_gc=columns_gc,

@@ -58,7 +58,7 @@ for race in races:
             stages,teams = [],[]
             
             stages = get_stages_db(race)
-            #stages = get_stages_db(race, all_stages=False, stage_id=1194)
+            #stages = get_stages_db(race, all_stages=False, stage_id=1197)
             #stages = get_stages_db(race, all_stages=True)
             
             teams = get_teams_db(race)
