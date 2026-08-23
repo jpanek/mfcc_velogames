@@ -17,7 +17,7 @@ reload_stages = False #Only run when new race is added
 reload_teams = False #Only run when new race is added and teams submitted
 load_results = True
 
-reload_results = True
+reload_results = False
 reload_rosters = False
 
 print(f"--------------------------------------------------------------------------")
