@@ -28,40 +28,56 @@ races = get_races_db(current_flag=True)
 
 for race in races:
 
-    # 1 session for one race
-    with sync_playwright() as p:
-        #browser = p.chromium.launch(headless=False)
-        browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
+    time_now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    print(f"Working on race: {race['name']} started at {time_now}")
 
-        time_now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        print(f"Working on race: {race['name']} started at {time_now}")
-        
-        #load all riders
-        if reload_riders:
+    #load all riders
+    if reload_riders:
+        with sync_playwright() as p:
+            #browser = p.chromium.launch(headless=False)
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page()
+
             riders_data = get_riders(race,page=page)
             insert_riders_db(race, riders_data)
             print(f'\t\t Loaded {len(riders_data)} riders')
 
-        if reload_stages:
-            #load all stages for a race
+    if reload_stages:
+        #load all stages for a race
+        with sync_playwright() as p:
+            #browser = p.chromium.launch(headless=False)
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page()
             stages = get_stages(race, page=page)
             insert_stages_db(race, stages)
 
-        if reload_teams:
-            #load teams for a race
+    if reload_teams:
+        #load teams for a race
+        with sync_playwright() as p:
+            #browser = p.chromium.launch(headless=False)
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page()
             teams = get_teams(race, page=page)
             insert_teams_db(race,teams)
 
-        if load_results:
+    if load_results:
+        
+        stages = get_stages_db(race)
+        #stages = get_stages_db(race, all_stages=False, stage_id=1197)
+        #stages = get_stages_db(race, all_stages=True)
 
-            stages,teams = [],[]
-            
-            stages = get_stages_db(race)
-            #stages = get_stages_db(race, all_stages=False, stage_id=1197)
-            #stages = get_stages_db(race, all_stages=True)
-            
-            teams = get_teams_db(race)
+        if not stages:
+            # no need to run this, just close it
+            print(f"\tNo stages to process for {race['name']} ...")
+            continue
+
+        #Stages to work on, lets continue:
+        teams = get_teams_db(race)
+
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page()
+
             #load roasters and results:
             for i,stage in enumerate(stages):
                 print(f"\tWorking on Stage: {stage['stage_number']} - {stage['stage_name']}")
@@ -130,10 +146,6 @@ for race in races:
                     print(f"\t\t ** Results are already loaded => Skipping refresh ...")
                     #send_email_stage_results(race, stage)
                     # ------------------------------------------------------------------------------
-
-            if not len(stages): print(f'\tNo stages to process for {race['name']} ...')
-            
-        browser.close()
 
 time_now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 print(f"\nFinished at {time_now}")
