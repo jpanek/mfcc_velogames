@@ -380,10 +380,10 @@ def insert_stage_points_db(race, stage, riders_data):
         
         #print(f"\tLoaded rider: No {i+1} {rider_name} scored {rider_points} points")
 
-    if i:
-        print(f"\t --> Loaded points for {i+1} riders.")
+    if len(riders_data) > 0:
+        print(f"\t\t --> Loaded points for {len(riders_data)} riders.")
     else:
-        print(f"\t --> x- results are not ready yet.")
+        print(f"\t\t --> x- results are not ready yet.")
 
     conn.commit()
     conn.close()
