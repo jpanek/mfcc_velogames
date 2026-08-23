@@ -5,6 +5,8 @@ from bs4 import BeautifulSoup, SoupStrainer
 import re
 from datetime import datetime, timedelta
 import random
+from playwright.sync_api import sync_playwright
+
 
 mfcc_league = 61627774
 
@@ -58,17 +60,23 @@ def get_team_url(base_url):
     url = f"{base_url}leaguescores.php?league={mfcc_league}"
     return url
 
-def get_stages(race, session=None):
+def get_stages(race, page=None):
     # Send a GET request to fetch the HTML page
     league_url = race['url'] + "races.php"
 
-    fetcher = session if session else requests
+    page.goto(league_url, wait_until="domcontentloaded")
 
-    response = fetcher.get(league_url, headers=HEADERS)
-    response.raise_for_status()
+    try:
+        page.get_by_role("button", name="Accept All").click(timeout=3000)
+    except:
+        pass
+
+    page.wait_for_timeout(3000)
+
+    html = page.content()
 
     # Parse the page with BeautifulSoup
-    soup = BeautifulSoup(response.text, 'html.parser')
+    soup = BeautifulSoup(html, 'html.parser')
     
     stages = []
 
@@ -124,23 +132,27 @@ def get_stages(race, session=None):
             })
     return stages
 
-def get_teams(race, session=None):
+def get_teams(race, page):
     url = get_team_url(race['url'])
 
-    current_headers = HEADERS.copy()
-    current_headers['Referer'] = race['url'] + "teamroster.php?tid=61967"
+    page.goto(url, wait_until="domcontentloaded")
 
-    fetcher = session if session else requests
+    try:
+        page.get_by_role("button", name="Accept All").click(timeout=3000)
+    except:
+        pass
 
-    response = fetcher.get(url, headers=current_headers)
-    response.raise_for_status()
-    
-    # Parse the page with BeautifulSoup
-    soup = BeautifulSoup(response.text, 'html.parser')
+    page.wait_for_timeout(3000)
+
+    print("Page title:", page.title())
+    print("Current URL:", page.url)
+
+    html = page.content()
+
+    soup = BeautifulSoup(html, 'html.parser')
     
     teams = []
     
-    # Find all the <li> elements under the div with id="users"
     user_list = soup.find('div', {'id': 'users'}).find_all('li')
     
     for user_item in user_list:
@@ -165,19 +177,25 @@ def get_teams(race, session=None):
 
     return teams
 
-def get_rider_stage(race, stage, session=None):
+def get_rider_stage(race, stage, page):
 
     url = get_riders_stage_url(race['url'], stage)
 
-    fetcher = session if session else requests
+    page.goto(url, wait_until="domcontentloaded")
 
-    #play with headers to not look like a bot:
-    current_headers = HEADERS.copy()
-    current_headers['Referer'] = f"{race['url']}leaguescores.php?league={mfcc_league}"
+    try:
+        page.get_by_role(
+            "button",
+            name="Accept All"
+        ).click(timeout=3000)
+    except:
+        pass
 
-    response = fetcher.get(url, headers=current_headers, timeout=timeout_seconds)
-    response.raise_for_status()
-    soup = BeautifulSoup(response.text, 'html.parser')
+    page.wait_for_timeout(3000)
+
+    html = page.content()
+
+    soup = BeautifulSoup(html, 'html.parser')
     riders_data = []
 
     # Find all list items within the users div
@@ -204,25 +222,27 @@ def get_rider_stage(race, stage, session=None):
 
     return riders_data
 
-def get_roster(race, stage, team, session=None):
+def get_roster(race, stage, team, page):
     url = get_team_stage_url(race['url'], team['team_code'], stage['stage_number'])
+
     roster = []
-    #print(url)
 
-    # if session if available use it, otherwise requests (standalone)
-    fetcher = session if session else requests
+    page.goto(url, wait_until="domcontentloaded")
 
-    #play with headers to not look like a bot:
-    current_headers = HEADERS.copy()
-    current_headers['Referer'] = f"{race['url']}leaguescores.php?league={mfcc_league}"
+    try:
+        page.get_by_role(
+            "button",
+            name="Accept All"
+        ).click(timeout=3000)
+    except:
+        pass
 
-    # Send the GET request and parse the page    
-    response = fetcher.get(url, headers=current_headers, timeout=timeout_seconds)
+    page.wait_for_timeout(3000)
 
-    response.raise_for_status()
-
+    html = page.content()
     only_table = SoupStrainer('table', {'class': 'responsive'})
-    soup = BeautifulSoup(response.text, 'lxml', parse_only=only_table)
+    soup = BeautifulSoup(html, 'lxml', parse_only=only_table)
+    
 
     # Get all rows (including the header)
     rows = soup.find_all('tr')
@@ -297,13 +317,105 @@ def get_roster(race, stage, team, session=None):
 
     return roster
 
-def get_riders(url, session=None):
-    url = url+"riders.php"
-    #print(url)
+def get_riders(race, page):
+    url = race['url']+"riders.php"
+
+    page.goto(url, wait_until="domcontentloaded")
+
+    try:
+        page.get_by_role("button", name="Accept All").click(timeout=3000)
+    except:
+        pass
+
+    page.wait_for_timeout(5000)
+
+    html = page.content()
+
+    html = html.replace("</td></td>", "</td>")
+    soup = BeautifulSoup(html, "html.parser")
+
+    # Locate the table
+    #table = soup.find('table', class_='tablesorter custom-popup')
+    table = soup.find('table', class_='tablesorter')
+
+    if not table:
+        raise ValueError("Table not found on page.")
+
+    # Extract column positions dynamically
+    headers = [th.get_text(strip=True).lower() for th in table.find_all('th')]
+    
+    # Define the required columns and find their indexes
+    column_map = {  
+        "rider": None,  
+        "team": None,  
+        "cost": None,  
+        "points": None  
+    }
+
+    for key in column_map:
+        for i, header in enumerate(headers):
+            if key in header:
+                column_map[key] = i
+                break
+
+    # Ensure all required columns exist
+    if None in column_map.values():
+        raise ValueError("Some required columns are missing in the table.")
+
+    # Extract data
+    data = []
+    for i,row in enumerate(table.find_all('tr')[1:]):  # Skip header row
+        cols = [td for td in row.find_all('td', recursive=False)]
+        if len(cols) < max(column_map.values()) + 1:
+            continue  # Skip incomplete rows
+
+        rider_name = cols[column_map["rider"]].get_text(strip=True)
+        team = cols[column_map["team"]].get_text(strip=True)
+        cost = cols[column_map["cost"]].get_text(strip=True)
+        points = cols[column_map["points"]].get_text(strip=True)
+        
+        link_tag = cols[column_map["rider"]].find("a")
+        if not link_tag or not link_tag.has_attr("href"):
+            continue
+        rider_code = link_tag["href"].split("=")[-1]
+
+        data.append({
+            "rider": rider_name,
+            "team": team,
+            "cost": cost,
+            "points": points,
+            "rider_code": rider_code
+        })
+
+    return data
+
+def get_riders_old(race, session=None):
+    url = race['url']+"riders.php"
 
     fetcher = session if session else requests
 
-    response = fetcher.get(url,headers=HEADERS)
+    fetcher.cookies.set(
+        "cf_clearance",
+        "koHJN9GxaUrZ.Xsoj_HihDlHekOC3pPjWC.CR7dHp_I-1787119692-1.2.1.1-TTsTopRcUVueblgTyZwAQ2K5ByMlZ2Z4BZBbvZbPIDn8uiAvsuPDwjjWT13TrG3uM3szyf7CNZ8xu7Rq1AsfDAamTsZZkKE57LHM9NPSkKEzRD1Hdfrs_JKzufILyojzRZcZ8ibX76HX2z3h3ucqeon6LmB.6_HUVABaouZClZs8zSDwIVQ4yRuhhOMAFZkpdfyViq8lbs7vUHi6W5UjHBAqinInx6GMwWx6zVvSe3YWXKRBH6Ej7n2EVsN8O.Qt9sxfgCq7enKPIFQh0pkW2m0bT5NvoFQRI7lg_3LuVFd_sMspxQSZA0HxoF3lV43PjhnnpPMhH9.o8BZb1a0ei80iB3gTgF1Gasq1bAOkyl0",
+        domain=".velogames.com"
+    )
+
+
+    #play with headers to not look like a bot:
+    current_headers = HEADERS.copy()
+    #current_headers['Referer'] = f"{race['url']}leaguescores.php?league={mfcc_league}"
+    #current_headers['Referer'] = race['url']
+    
+
+    response = fetcher.get(url,headers=current_headers)
+
+    debug = 1
+    if debug:
+        print("STATUS:", response.status_code)
+        print("URL:", response.url)
+        print("HEADERS:", response.headers)
+        print("BODY:", response.text[:1000])
+
     response.raise_for_status()
 
     html = response.text.replace("</td></td>", "</td>")

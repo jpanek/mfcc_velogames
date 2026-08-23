@@ -8,7 +8,8 @@ from datetime import datetime
 import time as time_pkg
 import random
 import requests
-import gc, sys
+import gc
+from playwright.sync_api import sync_playwright
 
 #create_tables() 
 reload_riders = False #Only run when new race is added
@@ -16,36 +17,40 @@ reload_stages = False #Only run when new race is added
 reload_teams = False #Only run when new race is added and teams submitted
 load_results = True
 
-reload_results = False
+reload_results = True
 reload_rosters = False
 
 print(f"--------------------------------------------------------------------------")
 
-#races = get_races_db(race_name='Tirreno')
+
 races = get_races_db(current_flag=True)
+#races = get_races_db(race_name='Itzulia', current_year=True)
 
 for race in races:
 
     # 1 session for one race
-    with requests.Session() as session:
+    with sync_playwright() as p:
+        #browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
 
         time_now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         print(f"Working on race: {race['name']} started at {time_now}")
         
         #load all riders
         if reload_riders:
-            riders_data = get_riders(race['url'],session=session)
+            riders_data = get_riders(race,page=page)
             insert_riders_db(race, riders_data)
             print(f'\t\t Loaded {len(riders_data)} riders')
 
         if reload_stages:
             #load all stages for a race
-            stages = get_stages(race, session=session)
+            stages = get_stages(race, page=page)
             insert_stages_db(race, stages)
 
         if reload_teams:
             #load teams for a race
-            teams = get_teams(race, session=session)
+            teams = get_teams(race, page=page)
             insert_teams_db(race,teams)
 
         if load_results:
@@ -53,7 +58,7 @@ for race in races:
             stages,teams = [],[]
             
             stages = get_stages_db(race)
-            #stages = get_stages_db(race, all_stages=False, stage_id=716)
+            #stages = get_stages_db(race, all_stages=False, stage_id=1194)
             #stages = get_stages_db(race, all_stages=True)
             
             teams = get_teams_db(race)
@@ -74,15 +79,15 @@ for race in races:
                         roster_db = get_roster_db(race, stage, team)
                         if len(roster_db)==0 or reload_rosters:
                             # SLEEP jitter
-                            wait = random.uniform(4, 6)
+                            wait = random.uniform(2, 4)
                             if k % 4 == 0:
-                                wait += random.uniform(5,15)
+                                wait += random.uniform(2,8)
                             print(f'\t\t Waiting for {round(wait,2)} seconds ...')
                             time_pkg.sleep(wait)
 
                             print(f"\t\tLoading teams: Team No.{k+1}: {race['name']} - {stage['stage_name']} - {team['team_name']}")
                             
-                            roster = get_roster(race,stage,team, session=session)
+                            roster = get_roster(race,stage,team, page=page)
 
                             if roster is None:
                                 print('\t\t No rosters are published yet')
@@ -107,11 +112,11 @@ for race in races:
                     print(f"\t\t ** Rosters are already loaded => Only refreshing the results ...")
 
                     # SLEEP jitter
-                    wait = random.uniform(5, 40)
+                    wait = random.uniform(2, 6)
                     print(f'\t\t Waiting for {round(wait,2)} seconds ...')
                     time_pkg.sleep(wait)
 
-                    riders_data = get_rider_stage(race=race, stage=stage, session=session)
+                    riders_data = get_rider_stage(race=race, stage=stage, page=page)
                     insert_stage_points_db(race=race, stage=stage, riders_data=riders_data)
 
                     if len(riders_data):
@@ -127,6 +132,8 @@ for race in races:
                     # ------------------------------------------------------------------------------
 
             if not len(stages): print(f'\tNo stages to process for {race['name']} ...')
+            
+        browser.close()
 
 time_now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 print(f"\nFinished at {time_now}")
