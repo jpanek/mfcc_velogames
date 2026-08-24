@@ -182,6 +182,8 @@ def get_rider_stage(race, stage, page):
     url = get_riders_stage_url(race['url'], stage)
 
     page.goto(url, wait_until="domcontentloaded")
+    print("TITLE:", page.title())
+
 
     try:
         page.get_by_role(
@@ -192,6 +194,10 @@ def get_rider_stage(race, stage, page):
         pass
 
     page.wait_for_timeout(3000)
+
+    print("URL:", page.url)
+    print("TITLE:", page.title())
+    print("USERS:", page.locator("#users").count())
 
     html = page.content()
 
