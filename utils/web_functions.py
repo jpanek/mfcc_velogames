@@ -195,9 +195,7 @@ def get_rider_stage(race, stage, page):
 
     page.wait_for_timeout(3000)
 
-    print("URL:", page.url)
-    print("TITLE:", page.title())
-    print("USERS:", page.locator("#users").count())
+    #print("URL:", page.url)
 
     html = page.content()
 
