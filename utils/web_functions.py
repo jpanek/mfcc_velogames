@@ -144,8 +144,8 @@ def get_teams(race, page):
 
     page.wait_for_timeout(3000)
 
-    print("Page title:", page.title())
-    print("Current URL:", page.url)
+    #print("Page title:", page.title())
+    #print("Current URL:", page.url)
 
     html = page.content()
 
@@ -182,7 +182,7 @@ def get_rider_stage(race, stage, page):
     url = get_riders_stage_url(race['url'], stage)
 
     page.goto(url, wait_until="domcontentloaded")
-    print("TITLE:", page.title())
+    #print("TITLE:", page.title())
 
 
     try:

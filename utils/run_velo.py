@@ -35,7 +35,7 @@ for race in races:
     if reload_riders:
         with sync_playwright() as p:
             #browser = p.chromium.launch(headless=False)
-            browser = p.chromium.launch(headless=True)
+            browser = p.chromium.launch(headless=False)
             page = browser.new_page()
 
             riders_data = get_riders(race,page=page)
@@ -46,7 +46,7 @@ for race in races:
         #load all stages for a race
         with sync_playwright() as p:
             #browser = p.chromium.launch(headless=False)
-            browser = p.chromium.launch(headless=True)
+            browser = p.chromium.launch(headless=False)
             page = browser.new_page()
             stages = get_stages(race, page=page)
             insert_stages_db(race, stages)
@@ -55,7 +55,7 @@ for race in races:
         #load teams for a race
         with sync_playwright() as p:
             #browser = p.chromium.launch(headless=False)
-            browser = p.chromium.launch(headless=True)
+            browser = p.chromium.launch(headless=False)
             page = browser.new_page()
             teams = get_teams(race, page=page)
             insert_teams_db(race,teams)
