@@ -77,7 +77,7 @@ for race in races:
         with sync_playwright() as p:
             #browser = p.chromium.launch(headless=True)
             browser = p.chromium.launch(
-                headless=True,
+                headless=False,
                 channel="chromium"
             )
             page = browser.new_page()
