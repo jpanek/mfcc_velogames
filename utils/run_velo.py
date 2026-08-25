@@ -17,7 +17,7 @@ reload_stages = False #Only run when new race is added
 reload_teams = False #Only run when new race is added and teams submitted
 load_results = True
 
-reload_results = False #make true if you want to force results re-run 
+reload_results = True #make true if you want to force results re-run 
 reload_rosters = False
 
 print(f"--------------------------------------------------------------------------")
@@ -63,7 +63,7 @@ for race in races:
     if load_results:
         
         stages = get_stages_db(race)
-        #stages = get_stages_db(race, all_stages=False, stage_id=1197)
+        stages = get_stages_db(race, all_stages=False, stage_id=1199)
         #stages = get_stages_db(race, all_stages=True)
 
         if not stages:
@@ -76,10 +76,7 @@ for race in races:
 
         with sync_playwright() as p:
             #browser = p.chromium.launch(headless=True)
-            browser = p.chromium.launch(
-                headless=False,
-                channel="chromium"
-            )
+            browser = p.chromium.launch(headless=False,channel="chromium")
             page = browser.new_page()
 
             #load roasters and results:
@@ -137,9 +134,6 @@ for race in races:
                     time_pkg.sleep(wait)
 
                     riders_data = get_rider_stage(race=race, stage=stage, page=page)
-                    
-                    print(riders_data)
-                    print(len(riders_data))
 
                     insert_stage_points_db(race=race, stage=stage, riders_data=riders_data)
 

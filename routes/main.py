@@ -468,6 +468,17 @@ def ad_hoc():
 
 @main_bp.route('/run-worker', methods=['POST'])
 def run_worker():
+    try:
+        subprocess.Popen(
+            ['ssh', 'juraj-lenovo', '/home/juraj/code/velogames/cron_run_velo.sh']
+        )
+    except Exception as e:
+        print(f"Error starting remote worker: {e}")
+
+    return redirect(url_for('main.view_log'))
+
+@main_bp.route('/run-worker_old', methods=['POST'])
+def run_worker_old():
     log_path = current_app.config.get('LOG_PATH')
     project_root = os.path.dirname(os.path.dirname(log_path))
     
