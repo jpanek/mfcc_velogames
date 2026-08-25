@@ -17,7 +17,7 @@ reload_stages = False #Only run when new race is added
 reload_teams = False #Only run when new race is added and teams submitted
 load_results = True
 
-reload_results = True #make true if you want to force results re-run 
+reload_results = False #make true if you want to force results re-run 
 reload_rosters = False
 
 print(f"--------------------------------------------------------------------------")
@@ -63,7 +63,7 @@ for race in races:
     if load_results:
         
         stages = get_stages_db(race)
-        stages = get_stages_db(race, all_stages=False, stage_id=1199)
+        #stages = get_stages_db(race, all_stages=False, stage_id=1199)
         #stages = get_stages_db(race, all_stages=True)
 
         if not stages:
