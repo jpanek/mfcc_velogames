@@ -470,7 +470,7 @@ def ad_hoc():
 def run_worker():
     try:
         subprocess.Popen(
-            ['ssh', 'juraj-lenovo', '/home/juraj/code/velogames/cron_run_velo.sh']
+            ['/usr/bin/ssh', 'juraj-lenovo', '/home/juraj/code/velogames/cron_run_velo.sh']
         )
     except Exception as e:
         print(f"Error starting remote worker: {e}")
