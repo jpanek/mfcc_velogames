@@ -32,3 +32,4 @@ pull_db.sh
 push_db.sh
 
 utils/run_velo_manual.py
+manual_run_velo.sh
