@@ -31,3 +31,4 @@ velogames.db
 pull_db.sh
 push_db.sh
 
+utils/run_velo_manual.py
