@@ -315,6 +315,7 @@ select
  sum(t.total) as pts
 from v_stage_roster t
 where t.team_id = ?
+and   t.rider is not null
 group by
  t.rider,
  t.team,
